@@ -178,3 +178,54 @@ Till in the business name) and **Resend domain verification** (DKIM and SPF
 records at your registrar — you will already be in there doing DNS).
 
 None of these block Phases 1, 2 or 3. They only bite if you start them late.
+
+---
+
+## 7 · Switching on M-Pesa  (Phase 3, needs Safaricom)
+
+The CRM can already send an STK prompt from any invoice. It needs four things
+from Safaricom before it will do anything but error politely.
+
+In Vercel's environment variables:
+
+```
+MPESA_ENV=sandbox            # then "production" when you go live
+MPESA_CONSUMER_KEY=
+MPESA_CONSUMER_SECRET=
+MPESA_SHORTCODE=             # your Paybill or Till
+MPESA_PASSKEY=
+MPESA_CALLBACK_URL=https://www.biziirise.com/api/webhooks/mpesa
+```
+
+**The callback URL must be registered with Safaricom**, not just set here. They
+will only POST to a URL you have declared, over HTTPS, publicly reachable. Ours
+is live at that address now and answers `200` to anything — which is deliberate,
+see below.
+
+### Test in sandbox first, with real money later
+
+1. Set `MPESA_ENV=sandbox` and use the sandbox credentials.
+2. Create a test client and a small invoice, send yourself a prompt.
+3. Watch the payment row move from `pending` to `success` on the invoices page.
+4. Only then switch to production and do one real KES 10 transaction.
+
+### Why the callback always answers 200
+
+Safaricom retries anything that is not a `200`. A handler that is already
+struggling gets a retry storm on top, which turns a small problem into an
+outage. So the route accepts everything, records what it can, and handles our
+own failures on our side. Three properties it holds:
+
+- **Idempotent.** A callback that lands twice cannot credit an invoice twice —
+  we only act on a payment still `pending`.
+- **Reconciles by sum, not by increment.** `paid_kes` is recalculated from all
+  successful payments, so a replay or a manual correction cannot cause drift.
+- **Keeps the raw payload.** The first time a client disputes a payment, the
+  field you did not store is the one you need.
+
+### What is deliberately not automatic
+
+Marking an invoice paid by hand. If money arrives some other way — cash, a bank
+transfer, a Send Money to your personal number — record it in the client's notes
+and adjust the invoice in Supabase. Building a manual-payment path invites
+someone to mark things paid that were not.
