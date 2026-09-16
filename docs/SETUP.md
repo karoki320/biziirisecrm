@@ -32,16 +32,54 @@ You will get a `*.vercel.app` URL. **The whole marketing site works at that URL
 immediately** — services, pricing, work, blog, WhatsApp CTA. The portal shows
 "not switched on yet", which is correct and deliberate.
 
-## 3 · Point the domain  (30 minutes, then wait for DNS)
+## 3 · Point the domain  (Truehost — read this, it bit us)
 
-In the Vercel project: **Settings → Domains → Add** → `biziirise.com`.
+**The domain is registered through Truehost, who resell NameSilo. It is
+delegated to Truehost's nameservers — `ns1.cloudoon.com`, `ns2.cloudoon.net`,
+`ns3.cloudoon.org` — and those nameservers currently REFUSE queries for
+biziirise.com.**
 
-Vercel shows you the exact records to create. Paste those at your registrar.
-Use the values Vercel gives you, not values from a blog post — they have changed
-before. Add both `biziirise.com` and `www.biziirise.com`.
+That is a *lame delegation*: the .com registry says "ask Truehost about this
+domain", and Truehost's servers answer "not mine". It means no DNS zone was ever
+created for the domain on their side. Registering a domain and provisioning its
+DNS zone are two different things at Truehost, and the second one did not happen.
 
-DNS usually resolves within an hour. Right now the domain answers nothing at
-all, so there is no old record to conflict with.
+**Consequence:** nothing you add in Vercel can work. Vercel verifies a domain by
+querying its nameservers, and those nameservers will not answer. This is not a
+Vercel problem and no amount of adding records there will fix it.
+
+### The fix: move DNS to Vercel
+
+In the **Truehost client area** → your domain → **Nameservers** (sometimes under
+"Manage Domain" or "Private Nameservers"), replace all three cloudoon entries
+with:
+
+```
+ns1.vercel-dns.com
+ns2.vercel-dns.com
+```
+
+Then in Vercel: **Settings → Domains → Add** → `biziirise.com`. With Vercel
+nameservers it creates the apex and `www` records itself — no A or CNAME to copy
+by hand.
+
+**Why this rather than fixing the zone at Truehost:** it sidesteps the broken
+zone completely, it puts DNS next to the deployment so there is one place to
+look, and apex records stop being a special case. The trade-off is that any
+future email records — the Resend DKIM and SPF entries, or Google Workspace MX —
+get added in Vercel rather than Truehost. That is a fair trade and arguably
+easier.
+
+**Timing:** the domain is brand new, so nothing is cached anywhere. A nameserver
+change on a fresh domain usually resolves within an hour or two rather than the
+48 hours you see quoted.
+
+### If you would rather stay on Truehost
+
+Open a support ticket asking them to **create the DNS zone** for biziirise.com —
+that is the specific thing missing, and saying it that way will save a round of
+back-and-forth. Once the zone exists and answers queries, add the A and CNAME
+records exactly as Vercel displays them.
 
 **At this point Phase 1 is live and can start producing enquiries.** Everything
 below is Phase 2 and can take as long as it takes.
