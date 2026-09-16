@@ -12,3 +12,6 @@ npm-debug.log*
 *.tsbuildinfo
 next-env.d.ts
 .supabase/
+
+# Files delivered into the chat by the desktop app — not part of the project
+Claude outputs/
