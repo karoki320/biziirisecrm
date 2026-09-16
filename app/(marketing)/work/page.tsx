@@ -14,6 +14,15 @@ export const metadata: Metadata = {
 
 const sectors = [...new Set(published.map((c) => c.sector))];
 
+/** A bad URL in the data should show an ugly label, not fail the build. */
+function prettyHost(url: string): string {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return url.replace(/^https?:\/\//i, "").replace(/\/+$/, "");
+  }
+}
+
 export default function WorkPage() {
   const jsonLd = {
     "@context": "https://schema.org",
@@ -110,7 +119,7 @@ export default function WorkPage() {
                       rel="noopener noreferrer"
                       className="group mt-6 inline-flex items-center text-sm font-semibold text-accent"
                     >
-                      Visit {new URL(c.url).hostname.replace(/^www\./, "")}
+                      Visit {prettyHost(c.url)}
                       <span
                         aria-hidden="true"
                         className="ml-1.5 inline-block transition-transform group-hover:translate-x-1"

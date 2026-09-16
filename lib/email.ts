@@ -26,7 +26,7 @@ export async function sendEmail(payload: SendEmailPayload) {
     subject: payload.subject,
     html: payload.html,
     text: payload.text,
-    replyTo: payload.replyTo ?? process.env.RESEND_REPLY_TO,
+    replyTo: payload.replyTo || process.env.RESEND_REPLY_TO || undefined,
     tags: payload.tags,
   });
 
