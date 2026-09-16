@@ -1,29 +1,39 @@
-const FALLBACK_URL = "https://biziirise.com";
-
 /**
- * The site's absolute origin.
+ * The canonical origin, used for canonicals, OG tags, the sitemap and robots.txt.
  *
- * `??` was not enough here. A Vercel environment variable that exists but is
- * blank is an empty string, not undefined, so the fallback never fired and
- * `new URL("")` threw during page-data collection — taking the whole build
- * down with a message that pointed at app/layout.tsx rather than at the cause.
+ * Two bugs lived here, both mine, both caught in production.
  *
- * This accepts only something that actually looks like an origin, falls back to
- * the Vercel-provided host so preview deployments work, and strips any trailing
- * slash so `${site.url}/blog` never becomes a double slash.
+ * 1. `??` does not catch an empty string, so a Vercel variable that existed but
+ *    was blank produced `new URL("")` and took the build down.
+ * 2. The fallback then used VERCEL_URL — which is the *per-deployment* hostname,
+ *    unique to every build. Every canonical, OG url and sitemap entry on the
+ *    live site pointed at a throwaway `…-84kixal0q-….vercel.app` address.
+ *
+ * VERCEL_PROJECT_PRODUCTION_URL is the variable that was wanted: Vercel's docs
+ * describe it as "a production domain name of the project… always set, even in
+ * preview deployments… useful to reliably generate links that point to
+ * production." It is stable across deploys and it is never a preview host.
+ *
+ * Order: explicit setting, then Vercel's production domain, then the known
+ * domain. VERCEL_URL is deliberately not in this chain.
  */
+const FALLBACK_URL = "https://www.biziirise.com";
+
+function normalise(value: string): string {
+  const withScheme = /^https?:\/\//i.test(value) ? value : `https://${value}`;
+  return withScheme.replace(/\/+$/, "");
+}
+
 function resolveSiteUrl(): string {
   const configured = process.env.NEXT_PUBLIC_SITE_URL?.trim();
-  if (configured && /^https?:\/\/[^\s]+$/i.test(configured)) {
-    return configured.replace(/\/+$/, "");
+  if (configured && /^https?:\/\/[^\s/]+/i.test(configured)) {
+    return normalise(configured);
   }
 
-  const vercelHost = (
-    process.env.NEXT_PUBLIC_VERCEL_URL ?? process.env.VERCEL_URL
-  )?.trim();
-  if (vercelHost) {
-    return `https://${vercelHost.replace(/^https?:\/\//i, "").replace(/\/+$/, "")}`;
-  }
+  const productionDomain =
+    process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL?.trim() ??
+    process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
+  if (productionDomain) return normalise(productionDomain);
 
   return FALLBACK_URL;
 }
