@@ -26,3 +26,17 @@ export async function createClient() {
     },
   );
 }
+
+/**
+ * True when the Supabase project keys are present.
+ *
+ * Phase 1 ships before a Supabase project exists, so every surface that needs
+ * a backend checks this first and renders an honest "not connected yet" state
+ * rather than throwing. Delete these checks once the keys are permanent.
+ */
+export function isSupabaseConfigured(): boolean {
+  return Boolean(
+    process.env.NEXT_PUBLIC_SUPABASE_URL &&
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  );
+}
