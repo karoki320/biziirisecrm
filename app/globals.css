@@ -1,0 +1,56 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* ---------------------------------------------------------------
+   Biziirise design tokens — the brand sky blue, as used on invoices.
+
+   Contrast, measured against the cream ground (#FCF9F0):
+     ink     17.0:1   muted 5.7:1   accent 6.9:1
+     white on accent  7.3:1
+   The light sky (#5FBDEC) only reaches 2.0:1 on cream, so it is an
+   illustration and graphic colour ONLY — never text, never a button
+   fill. It earns its keep on dark surfaces and inside artwork.
+   --------------------------------------------------------------- */
+@theme {
+  --color-cream: #fcf9f0;      /* page ground — warm, not stark white */
+  --color-cream-deep: #f5efe0; /* alternating section band */
+  --color-ink: #14181f;        /* headings */
+  --color-muted: #5b6472;      /* body copy */
+  --color-line: #e9e2d0;       /* hairlines, card borders */
+  --color-accent: #0b5c87;     /* brand sky blue, deep — CTAs and links */
+  --color-accent-hover: #084768;
+  --color-accent-tint: #e2f1fb; /* accent-tinted surfaces */
+  --color-sky: #5fbdec;        /* brand sky blue, light — GRAPHICS ONLY */
+  --color-brand: #109bfc;      /* the logo mark's own blue — MARK ONLY, 2.8:1 on cream */
+
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+
+  --radius-card: 14px;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Visible focus everywhere — this is an accessibility floor, not a style choice. */
+:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
