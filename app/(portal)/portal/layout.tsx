@@ -48,6 +48,10 @@ export default async function PortalLayout({
   const session = await getPortalSession();
   if (!session) redirect("/login?next=/portal");
 
+  // Admins and staff have no client of their own, so the portal would show them
+  // an empty page. Send them where their work actually is.
+  if (session.role === "admin" || session.role === "staff") redirect("/admin");
+
   return (
     <div className="flex min-h-screen flex-col">
       <header className="border-b border-line bg-cream-deep">
