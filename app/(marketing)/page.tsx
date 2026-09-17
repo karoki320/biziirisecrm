@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { WhatsAppCta } from "@/components/whatsapp-cta";
+import { ServiceFinder } from "@/components/service-finder";
 import { site } from "@/lib/site";
 import { services } from "@/lib/services";
 import { art } from "@/lib/art";
@@ -48,7 +49,7 @@ export default function HomePage() {
 
             <h1 className="text-4xl font-extrabold leading-[1.08] tracking-tight text-ink sm:text-5xl lg:text-6xl">
               Software that runs your business
-              <span className="text-accent"> while you run it.</span>
+              <span className="text-accent"> with you.</span>
             </h1>
 
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted sm:text-xl">
@@ -56,11 +57,19 @@ export default function HomePage() {
               Prices on the page. No forms, no proposals to chase. Just message us.
             </p>
 
-            <div className="mt-9">
-              <WhatsAppCta context="Homepage hero" />
-              <p className="mt-3.5 text-sm text-muted">
-                Opens WhatsApp with your message ready. We usually reply within the hour.
-              </p>
+            {/* Two doors, on purpose. The finder is for someone who does not
+                yet know what to call the thing they need — it asks in their
+                words, then hands them to WhatsApp already introduced. The raw
+                CTA stays for someone who just wants to talk. */}
+            <div className="mt-9 space-y-4">
+              <ServiceFinder />
+
+              <div>
+                <WhatsAppCta context="Homepage hero" />
+                <p className="mt-3.5 text-sm text-muted">
+                  Or go straight to WhatsApp. We usually reply within the hour.
+                </p>
+              </div>
             </div>
           </div>
 

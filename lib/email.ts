@@ -17,6 +17,8 @@ export type SendEmailPayload = {
   replyTo?: string;
   /** Surfaces in the Resend dashboard and in our own send_log. */
   tags?: { name: string; value: string }[];
+  /** `content` is base64. Resend caps a whole message at 40MB. */
+  attachments?: { filename: string; content: string }[];
 };
 
 export async function sendEmail(payload: SendEmailPayload) {
@@ -28,6 +30,7 @@ export async function sendEmail(payload: SendEmailPayload) {
     text: payload.text,
     replyTo: payload.replyTo || process.env.RESEND_REPLY_TO || undefined,
     tags: payload.tags,
+    attachments: payload.attachments,
   });
 
   if (error) return { ok: false as const, error: error.message };

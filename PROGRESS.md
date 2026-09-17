@@ -1,7 +1,7 @@
 # Where we are
 
 **Read this file first.** `docs/SETUP.md` is the reference manual — go there only
-when this file sends you. Last updated 17 Sep 2026.
+when this file sends you. Last updated 17 Sep 2026, afternoon.
 
 ---
 
@@ -24,33 +24,46 @@ Your account: `biziirise@gmail.com` — role `admin`.
 
 ## Done today (17 Sep)
 
+**Morning — the CRM**
 - Admin panel can add clients, edit them, invite them to the portal, revoke access.
   No more SQL in Supabase for any of that.
-- WhatsApp inbound webhook built: a first message becomes a lead with the page
-  that produced it attached.
-- Resend account created, `biziirise.com` verified via Auto configure.
-- Your account promoted to `admin`.
-- Supabase URL Configuration fixed (Site URL + redirect allow-list). The magic
-  link was silently falling back to the homepage before this.
-- Admins now land on `/admin` instead of an empty `/portal`. Commit `2b19d47`.
+- WhatsApp inbound webhook: a first message becomes a lead with the page that
+  produced it attached.
+- Resend verified, SMTP wired, email arriving from biziirise.com.
+- Your account promoted to `admin`; Supabase URL config fixed.
+- Admins land on `/admin`, not an empty `/portal`.
 
----
+**Afternoon — the front of the site**
+- Headline is now *Software that runs your business with you.*
+- Contact details: **+254 141 025 616** everywhere, `hello@biziirise.com` shown
+  publicly, `biziirise@gmail.com` kept as the inbox we actually send copies to.
+- **Mobile nav** — a real menu with Services, Work, Blog, **Client login** and
+  WhatsApp. Client login used to disappear on phones entirely.
+- **Service finder** — "What are you looking for?" on the homepage. Search in
+  plain words ("online shop", "posters", "mpesa"), pick a service, read the
+  packages, pick one, then four fields and WhatsApp opens introduced. The lead
+  is written to the CRM *before* the handoff, so someone who fills the form and
+  wanders off is still yours.
+- **Terms + agreement** — `/terms` is the plain-language version, `/agreement`
+  is the tick-box. Ticking generates a dated PDF with their details and the full
+  terms, emails it to them and to you, files it in their portal if they are
+  already a client, and records who/when/from where in a new `agreements` table.
 
 ## Open — in order
 
-1. **`git push`** — commit `2b19d47` is local only.
-2. **Vercel env vars** — `RESEND_API_KEY` and `RESEND_FROM_EMAIL`, all three
+1. **`git push`** — several commits are local only. Nothing today is live until
+   you push.
+2. **Run migration `0005_agreements.sql`** in Supabase → SQL Editor. The
+   agreement flow needs that table. Everything else works without it.
+3. **Vercel env vars** — `RESEND_API_KEY` and `RESEND_FROM_EMAIL`, all three
    environments, then redeploy. *(Confirm whether this is done.)*
-3. **Supabase email templates** — Magic Link and Invite user must use
-   `{{ .TokenHash }}`, not `{{ .ConfirmationURL }}`. Without this, invite links
-   break.
-4. **Supabase SMTP** — host `smtp.resend.com`, port 465, username `resend`,
-   password = Resend API key, sender `hello@biziirise.com`.
-5. **Turn OFF "Enable sign ups"** — Authentication → Sign In / Providers.
+4. **Turn OFF "Enable sign ups"** — Authentication → Sign In / Providers.
    Clients never register themselves; you invite them.
-6. **Test** — invite your own personal address from `/admin/clients`, confirm it
-   arrives from biziirise.com and the link signs you in.
-7. **Add your first real client** in `/admin/clients`.
+5. **Have an advocate read `lib/terms.ts`.** It is written to match how you
+   actually work, but it is not legal advice and I am not a lawyer. Bump
+   `TERMS_VERSION` if anything changes — old agreements keep saying which
+   wording they were signed against.
+6. **Add your first real client** in `/admin/clients`.
 
 ## Later, not blocking
 
@@ -72,3 +85,7 @@ Your account: `biziirise@gmail.com` — role `admin`.
 - **Run git from Windows.** The Claude session bridge has no GitHub credentials.
 - **Never prefix `SUPABASE_SERVICE_ROLE_KEY` with `NEXT_PUBLIC_`.** It bypasses
   every security policy in the database.
+- **`hello@biziirise.com` is a sending identity, not a mailbox.** Mail we send
+  ourselves goes to `biziirise@gmail.com` (`site.inbox`), or it lands nowhere.
+- **The terms live in one file.** `lib/terms.ts` feeds both the web page and the
+  PDF, so a client can never tick one version and receive another.

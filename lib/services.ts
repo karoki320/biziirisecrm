@@ -22,6 +22,12 @@ export type Service = {
   cardBlurb: string;
   /** Shown under the price on cards and index rows. */
   priceHint: string;
+  /**
+   * What someone actually types into the finder. Not SEO terms — the words a
+   * Nairobi shop owner uses for the thing they want. Sheng and misspellings
+   * belong here too: "wesbite" is a real search.
+   */
+  keywords: string[];
   /** Detail page standfirst. */
   tagline: string;
   intro: string;
@@ -45,6 +51,12 @@ export function priceLabel(pkg: Pkg): string {
 export const services: Service[] = [
   {
     slug: "websites",
+    keywords: [
+      "website", "web site", "wesbite", "company profile", "profile website",
+      "business website", "landing page", "portfolio", "brochure site",
+      "5 page website", "simple website", "company site", "web page",
+      "online presence", "google", "seo", "domain", "hosting",
+    ],
     title: "Company profile websites",
     cardBlurb:
       "The site that makes a serious business look serious. Live in days, not months.",
@@ -104,6 +116,12 @@ export const services: Service[] = [
 
   {
     slug: "ecommerce",
+    keywords: [
+      "ecommerce", "e-commerce", "online shop", "online store", "shop",
+      "sell online", "selling online", "products", "catalogue", "catalog",
+      "cart", "checkout", "mpesa", "m-pesa", "payments", "pay online",
+      "delivery", "stock", "inventory", "boutique", "supermarket",
+    ],
     title: "Ecommerce",
     cardBlurb:
       "Sell online with M-Pesa checkout and WhatsApp ordering, managed from one dashboard.",
@@ -179,6 +197,12 @@ export const services: Service[] = [
 
   {
     slug: "digital-marketing",
+    keywords: [
+      "marketing", "digital marketing", "social media", "social media management",
+      "instagram", "tiktok", "facebook", "content", "videos", "reels",
+      "posters", "posts", "branding", "ads", "meta ads", "advertising",
+      "grow followers", "engagement", "funnel", "leads",
+    ],
     title: "Digital marketing",
     cardBlurb:
       "Content, production and posting across every platform — run as a sales funnel, not a schedule.",
@@ -259,6 +283,12 @@ export const services: Service[] = [
 
   {
     slug: "custom-builds",
+    keywords: [
+      "app", "application", "software", "system", "crm", "erp", "dashboard",
+      "automation", "automate", "custom", "booking system", "management system",
+      "pos", "point of sale", "integration", "api", "whatsapp bot", "chatbot",
+      "ai", "portal", "database",
+    ],
     title: "Custom builds",
     cardBlurb:
       "AI automation, CRM systems, client portals and the integrations that tie them together.",

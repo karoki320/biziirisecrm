@@ -44,10 +44,17 @@ export const site = {
   tagline: "Websites, ecommerce and digital marketing for Kenyan businesses.",
   url: resolveSiteUrl(),
   locale: "en_KE",
-  email: "karokieugene000@gmail.com",
-  phone: "+254117232766",
+  /** Shown on the site and used as the From address. */
+  email: "hello@biziirise.com",
+  /**
+   * Where mail to us actually needs to land. hello@ is a sending identity on a
+   * verified domain, not necessarily a mailbox — never send our own copies to
+   * it or they bounce into nothing.
+   */
+  inbox: "biziirise@gmail.com",
+  phone: "+254141025616",
   /** wa.me needs the number with no +, spaces or dashes. */
-  whatsappNumber: "254117232766",
+  whatsappNumber: "254141025616",
   whatsappPrefill: "Hi Biziirise, I'd like to talk about a project",
   socials: {
     tiktok: "https://www.tiktok.com/@biziirise",

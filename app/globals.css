@@ -22,6 +22,8 @@
   --color-accent-tint: #e2f1fb; /* accent-tinted surfaces */
   --color-sky: #5fbdec;        /* brand sky blue, light — GRAPHICS ONLY */
   --color-brand: #109bfc;      /* the logo mark's own blue — MARK ONLY, 2.8:1 on cream */
+  --color-surface: #fffdf6;    /* raised card on cream — 1.03:1, a lift not a colour */
+  --color-danger: #a32c22;     /* form errors — 6.8:1 on cream, 7.0:1 on surface */
 
   --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
 

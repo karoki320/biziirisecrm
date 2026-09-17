@@ -25,6 +25,7 @@ export function SiteFooter() {
             <li><Link className="hover:text-ink" href="/work">Work</Link></li>
             <li><Link className="hover:text-ink" href="/blog">Blog</Link></li>
             <li><Link className="hover:text-ink" href="/login">Client portal</Link></li>
+            <li><Link className="hover:text-ink" href="/terms">Terms</Link></li>
           </ul>
         </div>
 

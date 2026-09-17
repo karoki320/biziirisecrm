@@ -6,11 +6,11 @@ import { allPosts } from "@/lib/blog";
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
 
-  const core = ["", "/services", "/work", "/blog"].map((path) => ({
+  const core = ["", "/services", "/work", "/blog", "/terms"].map((path) => ({
     url: `${site.url}${path}`,
     lastModified: now,
     changeFrequency: (path === "/blog" ? "weekly" : "monthly") as "weekly" | "monthly",
-    priority: path === "" ? 1 : 0.8,
+    priority: path === "" ? 1 : path === "/terms" ? 0.3 : 0.8,
   }));
 
   const servicePages = services.map((s) => ({
