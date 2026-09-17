@@ -140,30 +140,31 @@ update profiles set role = 'admin' where id = '<your-user-id>';
 
 Your user id is in **Authentication → Users**.
 
-## 6 · Add your first client  (5 minutes)
+## 6 · Add your first client  (2 minutes, no SQL)
 
-```sql
--- 1. the business
-insert into clients (name, company, email, whatsapp_phone)
-values ('Skinner''s Restaurant', 'Skinner''s Restaurant & Butchery',
-        'owner@example.co.ke', '254712345678');
+You asked for this and you were right to: adding a client should not mean
+opening Supabase. It doesn't any more.
 
--- 2. invite them: Authentication → Users → Invite user, using that email
+1. Sign in and go to **/admin/clients**.
+2. Fill in **Add a client**. Only the name is required — company, email, phone,
+   WhatsApp number and notes can all come later.
+3. Open the client and use **Portal access → Invite**. That sends them a
+   Supabase invite email, creates their login, and links it to this business in
+   one step. If they already have an account, it links that one instead of
+   failing.
+4. **Remove access** on the same panel revokes a login without deleting the
+   person or the business.
 
--- 3. link their login to the business
-update profiles
-set client_id = (select id from clients where name = 'Skinner''s Restaurant')
-where id = '<their-user-id>';
+Everything about a client — details, projects, invoices, documents — is
+editable from that page. The only thing still worth doing in Supabase is
+promoting yourself to admin (step 5), because that is a one-time act and a
+button for it would be a button for escalating your own privileges.
 
--- 4. give them something to look at
-insert into projects (client_id, name, summary, status)
-values ((select id from clients where name = 'Skinner''s Restaurant'),
-        'Kitchen dashboard', 'Order routing and staff roles.', 'in_progress');
-```
-
-Then sign in as them and confirm they see their project and nothing else. Do
-this with two clients before you invite a real one — the policies are tested,
-but you should see the isolation with your own eyes.
+**Do this twice before you invite a real client.** Make two businesses, invite
+two logins, sign in as each, and see with your own eyes that neither can see the
+other's projects. The RLS policies are tested against a real Postgres — eleven
+behavioural checks, including two-client isolation — but a tested policy and a
+policy you have watched hold are different kinds of confidence.
 
 ---
 
@@ -181,7 +182,11 @@ None of these block Phases 1, 2 or 3. They only bite if you start them late.
 
 ---
 
-## 7 · Switching on M-Pesa  (Phase 3, needs Safaricom)
+## 7 · Switching on M-Pesa  (built, **paused** until your Safaricom docs are in)
+
+> **Status: paused at your request.** Nothing needs undoing. The code is
+> written and deployed, and with no credentials set it simply refuses to send
+> a prompt and says so. Come back to this section the day Daraja approves you.
 
 The CRM can already send an STK prompt from any invoice. It needs four things
 from Safaricom before it will do anything but error politely.
@@ -229,3 +234,207 @@ Marking an invoice paid by hand. If money arrives some other way — cash, a ban
 transfer, a Send Money to your personal number — record it in the client's notes
 and adjust the invoice in Supabase. Building a manual-payment path invites
 someone to mark things paid that were not.
+
+---
+
+## 8 · WhatsApp Cloud API  (start today — the queue is the slow part)
+
+### Why this matters more than it looks
+
+Every CTA on the site opens WhatsApp with a message already typed. That is the
+right call for conversion — nobody fills in a form on a phone at 9pm — but it
+means a lead arrives in your pocket and nowhere else. No record, no follow-up
+list, no idea which page produced it. That gap has been open since day one.
+
+The inbound webhook closes it. Once Meta approves the number, every first
+message from a new person becomes a row in `leads`, with the page that sent them
+already attached — because the pre-filled text carries it in brackets, and the
+webhook reads it back out.
+
+### What is already built
+
+`/api/webhooks/whatsapp` is live and deployed. It:
+
+- answers Meta's one-time `GET` verification handshake with the challenge;
+- **rejects any `POST` that is not signed by Meta** with your app secret. Without
+  this, anyone who found the URL could write rows into your CRM;
+- creates a lead from a first inbound message, with name, number, the message
+  body and the page context;
+- recognises an existing client by WhatsApp number and logs the message against
+  them instead of inventing a duplicate lead;
+- touches `last_contacted_at` on a lead that already exists rather than creating
+  a second one;
+- always answers `200`, for the same reason the M-Pesa callback does — Meta
+  retries failures, and a retry storm on a struggling handler is how a small
+  problem becomes an outage.
+
+Outbound sending (`lib/whatsapp.ts`) is written too: templates for proactive
+messages, free text for replies inside the 24-hour window, and a Kenyan number
+normaliser that handles `07xx`, `+2547xx` and `2547xx`.
+
+### Your side, in order
+
+**1. Meta Business verification.** *Start this today.* business.facebook.com →
+Business Settings → Security Centre → Start Verification. You will need a
+certificate of incorporation or business permit, and a utility bill or bank
+letter showing the business name and address. Days to weeks, and you cannot
+shorten it later. Everything below waits behind it.
+
+**2. Create a Meta app.** developers.facebook.com → My Apps → Create App →
+**Business** type → add the **WhatsApp** product.
+
+**3. The number.** Use a number that is *not* on WhatsApp Business already —
+migrating an existing one means losing the chat history on the phone. If your
+current business number is the one on the website, think about this before you
+move it. Meta gives you a free test number to develop against in the meantime.
+
+**4. Copy four values into Vercel** (Settings → Environment Variables, all
+environments):
+
+```
+WHATSAPP_PHONE_NUMBER_ID=      # WhatsApp → API Setup
+WHATSAPP_BUSINESS_ACCOUNT_ID=  # same page
+WHATSAPP_ACCESS_TOKEN=         # see the warning below
+WHATSAPP_VERIFY_TOKEN=         # you invent this — any long random string
+WHATSAPP_APP_SECRET=           # App Settings → Basic → App Secret → Show
+```
+
+> **The access token is the one that will catch you out.** The token on the API
+> Setup page expires in **24 hours**. It is for testing only. For production you
+> need a **System User token**: Business Settings → Users → System Users → Add
+> → give it Admin on the app and the WhatsApp account → Generate token → set
+> expiry to **Never** → scopes `whatsapp_business_messaging` and
+> `whatsapp_business_management`. If messages silently stop working a day after
+> you set this up, this is why.
+
+**5. Wire the webhook.** In the Meta app: WhatsApp → Configuration → Webhook →
+Edit.
+
+```
+Callback URL:  https://www.biziirise.com/api/webhooks/whatsapp
+Verify token:  <the same WHATSAPP_VERIFY_TOKEN you set in Vercel>
+```
+
+Then **Manage → subscribe to `messages`**. Without that subscription the
+handshake succeeds and nothing ever arrives — a genuinely confusing failure,
+because everything looks green.
+
+Deploy to Vercel *before* you click Verify. The handshake hits the live URL, and
+it cannot succeed against a deployment that doesn't have the token yet.
+
+**6. Test it.** Message your own business number from your personal phone. A new
+lead should appear at **/admin/leads** within a second or two. Send a second
+message — you should still have exactly one lead.
+
+### Templates, and the rule that governs everything else
+
+You may send free-form text only within **24 hours** of the person's last
+message to you. Outside that window, every message must be a template Meta has
+approved in advance. This is not a limit you can engineer around, and it shapes
+what automation is possible: a "your invoice is ready" notification is a
+template, submitted and approved days earlier. Approval is usually hours.
+
+Three worth submitting first, under Manage Templates:
+
+- `invoice_ready` — utility — *"Hi {{1}}, your invoice for {{2}} is ready. KES
+  {{3}}. Pay by M-Pesa or view it in your portal: {{4}}"*
+- `project_update` — utility — *"Hi {{1}}, {{2}} has moved to {{3}}. Details in
+  your portal: {{4}}"*
+- `lead_followup` — marketing — *"Hi {{1}}, Eugene from Biziirise. You asked
+  about {{2}} a few days ago — still useful to talk?"*
+
+Write them as a person would speak. Templates that read like a bank get rejected
+more often than templates that read like a message, and they perform worse when
+they pass.
+
+### Costs, so there are no surprises
+
+Meta charges per 24-hour conversation, not per message, and the price depends on
+who opened it. A conversation the *customer* starts is currently free for the
+first 1,000 a month. A *business-initiated* one (your invoice notification) is
+billed at the Kenya rate — low single-digit US cents for utility, more for
+marketing. At your volume this is a few hundred shillings a month at most, but
+it is a real cost, and it scales with how chatty your automation is.
+
+---
+
+## 9 · Resend  (30 minutes, and worth doing before the WhatsApp queue clears)
+
+### Two jobs, not one
+
+Resend sends your transactional email — invoice notifications, project updates.
+That is the obvious job. The second one is less obvious and matters sooner:
+**Supabase's built-in mailer is rate-limited to a handful of messages per hour**
+and sends from a Supabase address. Every portal invite you send goes through it.
+Point Supabase at Resend as its SMTP provider and invites arrive from
+`biziirise.com`, look like you sent them, and stop landing in spam.
+
+### Your side, in order
+
+**1. Sign up and verify the domain.** resend.com → Domains → Add Domain →
+`biziirise.com`. Resend gives you three records to add wherever your DNS lives
+(Vercel, if you moved the nameservers in step 3 — Project → Settings → Domains
+→ the DNS records tab):
+
+| Type | Name | Purpose |
+|---|---|---|
+| TXT | `resend._domainkey` | DKIM — signs your mail so it isn't forged |
+| MX | `send` | bounce and complaint handling |
+| TXT | `send` | SPF — declares Resend may send as you |
+
+Verification is usually minutes. If it stalls past an hour, the record almost
+always has the domain appended twice — `resend._domainkey.biziirise.com.biziirise.com`
+— which is the single most common DNS mistake there is.
+
+**Use a subdomain if you ever plan to send marketing email.** `send.biziirise.com`
+for transactional keeps your root domain's reputation separate, so a campaign
+that gets marked as spam cannot stop invoices from being delivered. If all you
+will ever send is transactional mail, the root domain is fine.
+
+**2. Set the keys in Vercel:**
+
+```
+RESEND_API_KEY=re_...
+RESEND_FROM_EMAIL=Biziirise <hello@biziirise.com>
+RESEND_REPLY_TO=hello@biziirise.com     # optional, if replies should go elsewhere
+```
+
+The display name is not decoration. `Biziirise <hello@biziirise.com>` gets opened;
+a bare address looks automated, because it is.
+
+**3. Point Supabase at Resend.** Supabase → Project Settings → Authentication →
+SMTP Settings → Enable Custom SMTP:
+
+```
+Host:      smtp.resend.com
+Port:      465
+Username:  resend
+Password:  <your Resend API key>
+Sender:    hello@biziirise.com
+Sender name: Biziirise
+```
+
+Then Authentication → Rate Limits → raise the email limit, which exists only
+because of the built-in mailer.
+
+**4. While you are in that screen — turn OFF "Enable sign ups."** Your clients
+never register themselves; you invite them. Leaving sign-ups on means anyone who
+finds `/login` can create an account. They would land in a portal with no client
+attached and see nothing, because RLS holds — but an account they should not
+have is still an account they should not have.
+
+**5. Test.** Invite yourself at a personal address from **/admin/clients**. The
+mail should arrive from `biziirise.com`, in the inbox rather than spam, and the
+link should log you in.
+
+### One thing to do once and forget
+
+Send a test to a Gmail address and open **Show original**. You want `SPF: PASS`,
+`DKIM: PASS`, `DMARC: PASS`. If DMARC fails, you have no DMARC record — add a
+TXT at `_dmarc` with `v=DMARC1; p=none; rua=mailto:hello@biziirise.com`. `p=none`
+only asks for reports; it changes nothing about delivery. Once you have watched
+the reports for a few weeks and nothing unexpected is sending as you, move to
+`p=quarantine`.
+
+You are a dev agency. Your own mail authentication passing is the kind of thing a
+technical client checks.

@@ -6,7 +6,13 @@ import {
   getClientProjects,
   getClientInvoices,
   getClientActivity,
+  getClientPortalUsers,
 } from "@/lib/admin";
+import {
+  updateClientRecord,
+  inviteClientToPortal,
+  revokePortalAccess,
+} from "@/app/actions/clients";
 import { PROJECT_STAGES, kes, shortDate, INVOICE_LABEL } from "@/lib/portal";
 import { setProjectStatus, createProject, createInvoice } from "@/app/actions/admin";
 import { StageSelect } from "@/components/admin/stage-select";
@@ -22,10 +28,11 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
   const client = await getClient(id);
   if (!client) notFound();
 
-  const [projects, invoices, activity] = await Promise.all([
+  const [projects, invoices, activity, portalUsers] = await Promise.all([
     getClientProjects(id),
     getClientInvoices(id),
     getClientActivity(id),
+    getClientPortalUsers(id),
   ]);
 
   const outstanding = invoices
@@ -56,6 +63,83 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
           </div>
         ))}
       </dl>
+
+      {/* ------------------------------------------------ portal access */}
+      <section className="mt-12">
+        <h2 className="font-mono text-xs font-semibold uppercase tracking-wider text-muted">
+          Portal access
+        </h2>
+
+        {portalUsers.length > 0 ? (
+          <ul className="mt-4 flex flex-col gap-px overflow-hidden rounded-card border border-line bg-line">
+            {portalUsers.map((u) => (
+              <li key={u.id} className="flex flex-wrap items-center justify-between gap-x-5 gap-y-2 bg-cream px-5 py-4">
+                <div className="min-w-0">
+                  <p className="font-medium text-ink">{u.full_name ?? "Portal user"}</p>
+                  <p className="mt-0.5 font-mono text-xs text-muted">
+                    {u.role} · added {shortDate(u.created_at)}
+                  </p>
+                </div>
+                <ActionForm action={revokePortalAccess} submitLabel="Remove access" compact>
+                  <input type="hidden" name="profileId" value={u.id} />
+                  <input type="hidden" name="clientId" value={client.id} />
+                </ActionForm>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="mt-4 rounded-card border border-dashed border-line px-5 py-4 text-sm leading-relaxed text-muted">
+            Nobody from this business can log in yet.
+          </p>
+        )}
+
+        <div className="mt-5 rounded-card border border-line bg-cream-deep p-6">
+          <h3 className="font-bold text-ink">Invite someone to the portal</h3>
+          <p className="mt-1 text-sm leading-relaxed text-muted">
+            Sends them an email with a sign-in link. They land straight in their
+            projects, documents and invoices — and can only ever see this client&rsquo;s.
+          </p>
+          <ActionForm action={inviteClientToPortal} submitLabel="Send invitation" className="mt-5">
+            <input type="hidden" name="clientId" value={client.id} />
+            <div className="grid gap-3 sm:grid-cols-2">
+              <input
+                name="email"
+                type="email"
+                required
+                defaultValue={client.email ?? ""}
+                placeholder="their@email.co.ke"
+                className={field}
+              />
+              <input name="fullName" placeholder="Their name (optional)" className={field} />
+            </div>
+          </ActionForm>
+        </div>
+      </section>
+
+      {/* ------------------------------------------------- edit details */}
+      <section className="mt-12">
+        <h2 className="font-mono text-xs font-semibold uppercase tracking-wider text-muted">
+          Details
+        </h2>
+        <div className="mt-4 rounded-card border border-line bg-cream-deep p-6">
+          <ActionForm action={updateClientRecord} submitLabel="Save details">
+            <input type="hidden" name="id" value={client.id} />
+            <div className="grid gap-3 sm:grid-cols-2">
+              <input name="name" required defaultValue={client.name} placeholder="Client name" className={field} />
+              <input name="company" defaultValue={client.company ?? ""} placeholder="Business name" className={field} />
+              <input name="email" type="email" defaultValue={client.email ?? ""} placeholder="Email" className={field} />
+              <input name="phone" defaultValue={client.phone ?? ""} placeholder="07xx xxx xxx" className={field} />
+              <textarea
+                name="notes"
+                rows={3}
+                defaultValue={client.notes ?? ""}
+                placeholder="Anything worth remembering"
+                className={`${field} sm:col-span-2`}
+              />
+            </div>
+          </ActionForm>
+        </div>
+      </section>
 
       {/* ---------------------------------------------------- projects */}
       <section className="mt-12">

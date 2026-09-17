@@ -148,6 +148,24 @@ export async function getClient(id: string): Promise<ClientRow | null> {
   return (data as ClientRow) ?? null;
 }
 
+export type PortalUser = {
+  id: string;
+  full_name: string | null;
+  role: string;
+  created_at: string;
+};
+
+/** Who can log into the portal for this client. */
+export async function getClientPortalUsers(clientId: string): Promise<PortalUser[]> {
+  if (!isSupabaseConfigured()) return [];
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("profiles")
+    .select("id, full_name, role, created_at")
+    .eq("client_id", clientId);
+  return (data as PortalUser[]) ?? [];
+}
+
 export async function getClientProjects(clientId: string): Promise<AdminProject[]> {
   if (!isSupabaseConfigured()) return [];
   const supabase = await createClient();
