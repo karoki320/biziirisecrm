@@ -1,5 +1,9 @@
 # Your side of the parallel track
 
+> **Looking for what to do next? Read `PROGRESS.md` in the project root instead.**
+> This file is the reference manual — the detail behind each step. Come here when
+> PROGRESS.md points you at a section, not to find your place.
+
 The portal is built. These are the things only you can do, because they need
 your accounts and your identity. Do them in this order — each one unblocks the
 next, and the first two get the site live.
