@@ -41,7 +41,12 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en-KE" className={jakarta.variable}>
+    <html lang="en-KE" className={jakarta.variable} suppressHydrationWarning>
+      <head>
+        {/* Marks JS as available before first paint, so animated elements can
+            start hidden without a flash — and stay visible when JS is off. */}
+        <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
+      </head>
       <body>{children}</body>
     </html>
   );

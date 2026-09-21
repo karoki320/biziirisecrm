@@ -4,9 +4,7 @@ import { WhatsAppCta } from "@/components/whatsapp-cta";
 import { ServiceFinder } from "@/components/service-finder";
 import { site } from "@/lib/site";
 import { services } from "@/lib/services";
-import { art } from "@/lib/art";
-import { HeroArt } from "@/components/header-band";
-import { HeroIllustration } from "@/components/hero-illustration";
+import { BiziiriseHeroVisual } from "@/components/hero/biziirise-hero-visual";
 
 export const metadata: Metadata = {
   title: `${site.legalName} — ${site.tagline}`,
@@ -73,13 +71,9 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* The drawn illustration is the default. Setting `home` in lib/art.ts
-              to a generated file overrides it. */}
-          {art.home ? (
-            <HeroArt src={art.home} />
-          ) : (
-            <HeroIllustration className="hidden h-auto w-full lg:block" />
-          )}
+          {/* The product, not a picture about the product. Isolated in its own
+              component; on small screens it stacks under the CTA. */}
+          <BiziiriseHeroVisual className="lg:-mr-6" />
         </div>
       </section>
 
