@@ -6,6 +6,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/supabase/server";
 import { site } from "@/lib/site";
 import { toE164Kenya } from "@/lib/whatsapp";
+import { buildQuote } from "@/lib/quote";
 
 /**
  * The service finder's inquiry.
@@ -26,8 +27,9 @@ const schema = z.object({
   business: z.string().trim().min(2, "What is the business called?").max(120),
   phone: z.string().trim().min(9, "We need a phone number we can reach you on.").max(20),
   need: z.string().trim().max(1000).optional(),
-  service: z.string().trim().max(80).optional(),
+  service: z.string().trim().max(80).optional(), // slug
   pkg: z.string().trim().max(80).optional(),
+  addOns: z.array(z.string().max(80)).max(5).default([]),
   // Honeypot. A human never sees it, so anything in it is a bot.
   website: z.string().max(0).optional(),
 });
@@ -49,6 +51,7 @@ export async function submitInquiry(
     need: formData.get("need") ?? undefined,
     service: formData.get("service") ?? undefined,
     pkg: formData.get("pkg") ?? undefined,
+    addOns: formData.getAll("addOn").map(String),
     website: formData.get("website") ?? undefined,
   });
 
@@ -61,10 +64,14 @@ export async function submitInquiry(
     return { fieldErrors };
   }
 
-  const { name, business, phone, need, service, pkg, website } = parsed.data;
+  const { name, business, phone, need, service, pkg, addOns, website } = parsed.data;
+
+  // Priced on the server from lib/services.ts, never from what the browser sent.
+  const quote = service ? buildQuote(service, pkg, addOns) : null;
+  const quoteLines = quote?.lines ?? [];
 
   // Silently succeed for bots — never tell them which check they failed.
-  if (website) return { whatsappUrl: buildWhatsAppUrl({ name, business, service, pkg, need }) };
+  if (website) return { whatsappUrl: buildWhatsAppUrl({ name, business, quoteLines, need }) };
 
   const e164 = toE164Kenya(phone);
   if (!e164) {
@@ -75,7 +82,8 @@ export async function submitInquiry(
     };
   }
 
-  const context = [service, pkg].filter(Boolean).join(" · ") || "Service finder";
+  const context =
+    [quote?.service.title, quote?.pkg?.name].filter(Boolean).join(" · ") || "Service finder";
 
   if (isSupabaseConfigured()) {
     try {
@@ -89,7 +97,13 @@ export async function submitInquiry(
         .eq("whatsapp_phone", e164)
         .maybeSingle();
 
-      const message = [need, `Business: ${business}`].filter(Boolean).join("\n");
+      const message = [
+        quoteLines.length ? `Quote shown:\n${quoteLines.join("\n")}` : null,
+        need ? `They said: ${need}` : null,
+        `Business: ${business}`,
+      ]
+        .filter(Boolean)
+        .join("\n\n");
 
       if (existing) {
         await admin
@@ -119,25 +133,22 @@ export async function submitInquiry(
     }
   }
 
-  return { whatsappUrl: buildWhatsAppUrl({ name, business, service, pkg, need }) };
+  return { whatsappUrl: buildWhatsAppUrl({ name, business, quoteLines, need }) };
 }
 
 function buildWhatsAppUrl(input: {
   name: string;
   business: string;
-  service?: string;
-  pkg?: string;
+  quoteLines: string[];
   need?: string;
 }) {
-  const lines = [
-    `Hi Biziirise, I'm ${input.name} from ${input.business}.`,
-    input.pkg
-      ? `I'm interested in ${input.service} — the ${input.pkg} package.`
-      : input.service
-        ? `I'm interested in ${input.service}.`
-        : "I'd like to talk about a project.",
-  ];
-  if (input.need) lines.push(`\n${input.need}`);
+  const lines = [`Hi Biziirise, I'm ${input.name} from ${input.business}.`];
+  if (input.quoteLines.length) {
+    lines.push("", "I'd like to go ahead with this quote:", ...input.quoteLines);
+  } else {
+    lines.push("I'd like a quote.");
+  }
+  if (input.need) lines.push("", input.need);
 
   return `https://wa.me/${site.whatsappNumber}?text=${encodeURIComponent(lines.join("\n"))}`;
 }

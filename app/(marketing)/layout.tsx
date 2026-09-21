@@ -1,5 +1,6 @@
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { Metricool } from "@/components/metricool";
 
 export default function MarketingLayout({
   children,
@@ -15,6 +16,7 @@ export default function MarketingLayout({
       <SiteHeader />
       <main id="main">{children}</main>
       <SiteFooter />
+      <Metricool />
     </>
   );
 }

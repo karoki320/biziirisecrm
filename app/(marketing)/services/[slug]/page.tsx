@@ -157,8 +157,8 @@ export default async function ServiceDetailPage({ params }: Props) {
             Ready when you are.
           </h2>
           <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-muted">
-            One message and we will tell you what this looks like for your
-            business specifically — before you commit to anything.
+            Send us a message and we&rsquo;ll tell you exactly what this would look
+            like for your business. No commitment.
           </p>
           <div className="mt-9 flex justify-center">
             <WhatsAppCta context={`${service.title} — footer`} />

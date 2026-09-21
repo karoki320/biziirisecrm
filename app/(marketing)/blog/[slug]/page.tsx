@@ -184,8 +184,8 @@ export default async function BlogPostPage({ params }: Props) {
             Still deciding?
           </h2>
           <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-muted">
-            Send us the actual situation and we will tell you what we would do —
-            even when the answer is that you do not need us yet.
+            Tell us what&rsquo;s going on and we&rsquo;ll tell you what we&rsquo;d do — even if
+            that means you don&rsquo;t need us yet.
           </p>
           <div className="mt-9 flex justify-center">
             <WhatsAppCta context={`Blog — ${post.title}`} />

@@ -18,12 +18,11 @@ export default function ServicesPage() {
       <section className="border-b border-line">
         <div className="mx-auto max-w-6xl px-5 py-16 sm:py-20">
           <h1 className="max-w-3xl text-4xl font-extrabold leading-[1.1] tracking-tight text-ink sm:text-5xl">
-            What we build, and what it costs.
+            What we do, and what it costs.
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted">
-            Prices are on the page because you should not have to sit through a
-            call to find out whether you can afford us. Pick the thing that
-            sounds like your problem.
+            All our prices are right here — no need to call just to ask. Pick
+            what fits your business.
           </p>
 
           <HeaderBand src={art.services} priority />
@@ -87,8 +86,8 @@ export default function ServicesPage() {
             Not sure which one you need?
           </h2>
           <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-muted">
-            Tell us what is slowing the business down and we will tell you
-            honestly which of these fixes it — or whether none of them do.
+            Tell us what you&rsquo;re trying to fix and we&rsquo;ll point you to the right
+            one. If none of them fit, we&rsquo;ll say so.
           </p>
           <div className="mt-9 flex justify-center">
             <WhatsAppCta context="Services page" />

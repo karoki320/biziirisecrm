@@ -19,17 +19,17 @@ export function AgreementForm() {
   if (state.ok) {
     return (
       <div className="rounded-2xl border-2 border-accent bg-accent-tint px-6 py-8 text-center">
-        <p className="text-2xl font-extrabold tracking-tight text-ink">That&rsquo;s it — you&rsquo;re signed.</p>
+        <p className="text-2xl font-extrabold tracking-tight text-ink">Done — you&rsquo;re all signed.</p>
         <p className="mx-auto mt-3 max-w-sm leading-relaxed text-muted">
           {state.emailed
-            ? "Your agreement is on its way to your inbox as a PDF. Nothing to print, nothing to post back."
-            : "Your agreement is recorded. We will send your PDF copy shortly."}
+            ? "We've emailed you the agreement as a PDF. Nothing to print or send back."
+            : "All recorded. We'll email you the PDF shortly."}
         </p>
         <p className="mt-5 inline-block rounded-full bg-cream px-4 py-2 font-mono text-sm font-semibold text-accent">
           {state.reference}
         </p>
         <p className="mt-5 text-sm text-muted">
-          Keep that reference. Quote it if you ever need to ask about this agreement.
+          That&rsquo;s your reference number — keep it handy in case you need it.
         </p>
       </div>
     );
@@ -44,13 +44,13 @@ export function AgreementForm() {
 
       <div className="grid gap-5 sm:grid-cols-2">
         <Field label="Your full name" name="fullName" autoComplete="name"
-          placeholder="Jane Mwihaki" error={state.fieldErrors?.fullName} />
+          placeholder="Your full name" error={state.fieldErrors?.fullName} />
         <Field label="Business name" name="business" autoComplete="organization"
-          placeholder="Skinner's Butchery" error={state.fieldErrors?.business} />
+          placeholder="Your business or brand" error={state.fieldErrors?.business} />
         <Field label="Email" name="email" type="email" autoComplete="email"
-          placeholder="you@business.co.ke" error={state.fieldErrors?.email} />
+          placeholder="you@example.com" error={state.fieldErrors?.email} />
         <Field label="Phone" name="phone" type="tel" inputMode="tel" autoComplete="tel"
-          required={false} placeholder="0712 345 678" error={state.fieldErrors?.phone} />
+          required={false} placeholder="07XX XXX XXX" error={state.fieldErrors?.phone} />
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2">
@@ -78,11 +78,11 @@ export function AgreementForm() {
             className="mt-1 h-5 w-5 shrink-0 cursor-pointer accent-[var(--color-accent)]"
           />
           <span className="text-sm leading-relaxed text-ink">
-            I have read and accept the{" "}
+            I&rsquo;ve read and agree to the{" "}
             <Link href="/terms" className="font-semibold text-accent underline underline-offset-4">
               terms of engagement
             </Link>{" "}
-            (version {TERMS_VERSION}), and I am authorised to accept them for this business.
+            (version {TERMS_VERSION}), and I&rsquo;m allowed to agree to them for this business.
           </span>
         </label>
         {state.fieldErrors?.accept && (
@@ -102,12 +102,12 @@ export function AgreementForm() {
         className="w-full rounded-full bg-accent px-6 py-4 text-base font-semibold text-white
                    transition-colors hover:bg-accent-hover disabled:opacity-60 sm:w-auto sm:px-10"
       >
-        {pending ? "Preparing your agreement…" : "Accept and send me the agreement"}
+        {pending ? "Creating your agreement…" : "Agree and send me my copy"}
       </button>
 
       <p className="text-sm leading-relaxed text-muted">
-        We email the signed PDF to you and keep a copy. Your acceptance is recorded with the date,
-        time and the exact version of the terms you were shown.
+        We&rsquo;ll email you a signed PDF and keep a copy. We also note the date, time and
+        which version of the terms you agreed to.
       </p>
     </form>
   );

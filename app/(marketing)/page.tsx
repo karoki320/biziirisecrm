@@ -53,8 +53,8 @@ export default function HomePage() {
             </h1>
 
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted sm:text-xl">
-              Websites, ecommerce and digital marketing for Kenyan businesses.
-              Prices on the page. No forms, no proposals to chase. Just message us.
+              Websites, online shops and social media marketing for Kenyan
+              businesses. See the prices, pick what you need, get a quote.
             </p>
 
             {/* Two doors, on purpose. The finder is for someone who does not
@@ -67,7 +67,7 @@ export default function HomePage() {
               <div>
                 <WhatsAppCta context="Homepage hero" />
                 <p className="mt-3.5 text-sm text-muted">
-                  Or go straight to WhatsApp. We usually reply within the hour.
+                  Rather just talk? Message us — we usually reply within the hour.
                 </p>
               </div>
             </div>
@@ -87,7 +87,7 @@ export default function HomePage() {
       <section className="border-y border-line bg-cream-deep py-20 lg:py-24">
         <div className="mx-auto max-w-6xl px-5">
           <h2 className="max-w-2xl text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">
-            What we build, and what it costs
+            What we do, and what it costs
           </h2>
 
           <ul className="mt-12 grid gap-5 sm:grid-cols-2">
@@ -120,9 +120,9 @@ export default function HomePage() {
         <div className="mx-auto max-w-6xl px-5">
           <dl className="grid gap-10 sm:grid-cols-3">
             {[
-              ["18+", "Kenyan businesses running on systems we built"],
-              ["100%", "Built on the same stack we sell — Next.js, Supabase, M-Pesa"],
-              ["< 1 hr", "Typical first reply on WhatsApp during working hours"],
+              ["18+", "Kenyan businesses using what we built"],
+              ["100%", "Built with the same tools we use for our clients"],
+              ["< 1 hr", "Usual reply time on WhatsApp during working hours"],
             ].map(([stat, label]) => (
               <div key={label}>
                 <dt className="text-4xl font-extrabold tracking-tight text-accent sm:text-5xl">
@@ -139,11 +139,11 @@ export default function HomePage() {
       <section className="border-t border-line bg-cream-deep py-20 lg:py-24">
         <div className="mx-auto max-w-3xl px-5 text-center">
           <h2 className="text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">
-            Tell us what is slowing your business down.
+            What&rsquo;s slowing your business down?
           </h2>
           <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-muted">
-            One message. We will tell you honestly whether software fixes it —
-            and roughly what it costs — before you commit to anything.
+            Send us one message. We&rsquo;ll tell you straight if we can help, and
+            roughly what it&rsquo;ll cost — no strings attached.
           </p>
           <div className="mt-9 flex justify-center">
             <WhatsAppCta context="Homepage footer CTA" />

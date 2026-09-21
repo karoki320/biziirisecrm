@@ -20,12 +20,11 @@ export default function BlogIndexPage() {
       <section className="border-b border-line">
         <div className="mx-auto max-w-6xl px-5 py-16 sm:py-20">
           <h1 className="max-w-3xl text-4xl font-extrabold leading-[1.1] tracking-tight text-ink sm:text-5xl">
-            Straight answers, no sales pitch.
+            Straight answers, no sales talk.
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted">
-            The questions Kenyan business owners actually ask us, answered
-            properly — with real numbers, including ours. If an article talks you
-            out of hiring us, it has done its job.
+            Real questions from Kenyan business owners, answered with real
+            numbers — ours included.
           </p>
 
           <HeaderBand src={art.blog} priority />
@@ -64,11 +63,11 @@ export default function BlogIndexPage() {
       <section className="border-t border-line bg-cream-deep py-20">
         <div className="mx-auto max-w-3xl px-5 text-center">
           <h2 className="text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">
-            Question we have not answered yet?
+            Got a question we haven&rsquo;t answered?
           </h2>
           <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-muted">
-            Ask it on WhatsApp. If it is a good one we will write it up, and you
-            get the answer either way.
+            Ask us on WhatsApp. You&rsquo;ll get an answer either way — and if it&rsquo;s a
+            good one, we might write about it.
           </p>
           <div className="mt-9 flex justify-center">
             <WhatsAppCta context="Blog index" />

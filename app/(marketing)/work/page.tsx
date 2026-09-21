@@ -48,12 +48,11 @@ export default function WorkPage() {
       <section className="border-b border-line">
         <div className="mx-auto max-w-6xl px-5 py-16 sm:py-20">
           <h1 className="max-w-3xl text-4xl font-extrabold leading-[1.1] tracking-tight text-ink sm:text-5xl">
-            Businesses running on what we built.
+            Some of the businesses we&rsquo;ve built for.
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted">
-            Every one of these is live right now, taking real orders, real
-            enquiries and real payments. Click through and use them — that is the
-            only review that counts.
+            These are all live right now, taking real orders and payments.
+            Click through and try them yourself.
           </p>
 
           <HeaderBand src={art.work} priority />
@@ -80,7 +79,7 @@ export default function WorkPage() {
                 18+
               </dt>
               <dd className="mt-2 text-sm leading-relaxed text-muted">
-                Kenyan businesses we have built for in total
+                Kenyan businesses we&rsquo;ve built for so far
               </dd>
             </div>
           </dl>
@@ -129,7 +128,7 @@ export default function WorkPage() {
                     </a>
                   ) : (
                     <p className="mt-6 text-sm text-muted">
-                      Not currently live at a public address.
+                      Not publicly available right now.
                     </p>
                   )}
                 </div>
@@ -170,11 +169,11 @@ export default function WorkPage() {
       <section className="border-t border-line py-20">
         <div className="mx-auto max-w-3xl px-5 text-center">
           <h2 className="text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">
-            Yours could be the next one on this page.
+            Your business could be next.
           </h2>
           <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-muted">
-            Tell us what your business needs to do that it cannot do today.
-            We will tell you honestly whether we are the right people to build it.
+            Tell us what you need. We&rsquo;ll let you know straight away if we&rsquo;re
+            the right fit.
           </p>
           <div className="mt-9 flex justify-center">
             <WhatsAppCta context="Work page" />

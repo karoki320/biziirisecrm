@@ -41,7 +41,7 @@ function resolveSiteUrl(): string {
 export const site = {
   name: "Biziirise",
   legalName: "Biziirise Digital Agency",
-  tagline: "Websites, ecommerce and digital marketing for Kenyan businesses.",
+  tagline: "Websites, online shops and digital marketing for Kenyan businesses.",
   url: resolveSiteUrl(),
   locale: "en_KE",
   /** Shown on the site and used as the From address. */

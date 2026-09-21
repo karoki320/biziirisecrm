@@ -15,18 +15,18 @@ export default function AgreementPage() {
   return (
     <main className="mx-auto max-w-2xl px-5 py-16 sm:py-20">
       <h1 className="text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">
-        Sign without the trip into town
+        Sign your agreement online
       </h1>
       <p className="mt-5 text-lg leading-relaxed text-muted">
-        Fill this in and tick the box. We generate your agreement, email you the PDF
-        and keep a copy. Takes about a minute, and there is nothing to post back.
+        No printing, no courier, no trip into town. Fill this in, tick the box, and
+        your signed agreement lands in your inbox. Takes about a minute.
       </p>
       <p className="mt-3 text-sm leading-relaxed text-muted">
         Read the{" "}
         <Link href="/terms" className="font-semibold text-accent underline underline-offset-4">
           full terms
         </Link>{" "}
-        first if you have not already.
+        first if you haven&rsquo;t yet.
       </p>
 
       <div className="mt-10">

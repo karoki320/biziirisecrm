@@ -2,7 +2,8 @@
 
 import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { services, priceLabel, type Service, type Pkg } from "@/lib/services";
+import { services, priceLabel, formatKes, type Service, type Pkg } from "@/lib/services";
+import { buildQuote, priceRange } from "@/lib/quote";
 import { submitInquiry, type InquiryState } from "@/app/actions/inquiries";
 
 /**
@@ -149,9 +150,9 @@ export function ServiceFinder() {
                 </button>
               )}
               <p className="flex-1 text-sm font-semibold text-ink">
-                {screen === "browse" && "What do you need?"}
+                {screen === "browse" && "What are you looking for?"}
                 {screen === "service" && service?.title}
-                {screen === "form" && "Almost there"}
+                {screen === "form" && "Your quote"}
               </p>
               <button
                 type="button"
@@ -202,13 +203,13 @@ export function ServiceFinder() {
                              transition-colors hover:bg-accent-hover focus:outline-none
                              focus-visible:ring-2 focus-visible:ring-accent/40"
                 >
-                  {pkg ? `Ask about ${pkg.name}` : `Ask about ${service.title.toLowerCase()}`}
+                  {pkg ? `See my quote for ${pkg.name}` : "See my quote"}
                 </button>
                 <Link
                   href={`/services/${service.slug}`}
                   className="mt-3 block py-1 text-center text-sm font-medium text-muted underline underline-offset-4 hover:text-ink"
                 >
-                  Read the full page first
+                  Read more about this first
                 </Link>
               </div>
             )}
@@ -243,7 +244,7 @@ function BrowseScreen({
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="A website, an online shop, social media…"
+          placeholder="e.g. website, online shop, social media"
           aria-label="Search services"
           className={`${field} pl-12`}
         />
@@ -271,9 +272,9 @@ function BrowseScreen({
 
       {matches.length === 0 && (
         <div className="rounded-2xl border border-dashed border-line px-5 py-8 text-center">
-          <p className="font-semibold text-ink">We might still build that.</p>
+          <p className="font-semibold text-ink">We can probably still help.</p>
           <p className="mt-1.5 text-sm leading-relaxed text-muted">
-            Nothing matched &ldquo;{query}&rdquo;, but custom work is most of what we do.
+            Nothing matched &ldquo;{query}&rdquo; — but we build custom stuff all the time.
           </p>
           <button
             type="button"
@@ -305,7 +306,7 @@ function ServiceScreen({
       <p className="mt-3 text-sm leading-relaxed text-muted">{service.intro}</p>
 
       <p className="mt-6 text-xs font-semibold uppercase tracking-wider text-muted">
-        Pick what fits
+        Pick an option
       </p>
 
       <ul className="mt-3 space-y-2.5">
@@ -360,19 +361,107 @@ function InquiryForm({ service, pkg }: { service: Service; pkg: Pkg | null }) {
     submitInquiry,
     {},
   );
+  const [addOns, setAddOns] = useState<string[]>([]);
+  const quote = buildQuote(service.slug, pkg?.name, addOns);
 
   // On success the server hands back the WhatsApp URL it built. Go there.
   useEffect(() => {
     if (state.whatsappUrl) window.location.href = state.whatsappUrl;
   }, [state.whatsappUrl]);
 
+  if (!quote) return null;
+  const range = priceRange(service);
+
   return (
-    <form action={action} className="space-y-4">
-      <p className="text-sm leading-relaxed text-muted">
-        Four quick things, then WhatsApp opens with your message already written.
+    <form action={action} className="space-y-5">
+      {/* ------------------------------ the quote ------------------------------ */}
+      <div className="rounded-2xl border-2 border-accent bg-accent-tint/60 p-5">
+        <p className="text-xs font-semibold uppercase tracking-wider text-accent">
+          {service.title}
+        </p>
+        <p className="mt-1 text-lg font-bold text-ink">
+          {pkg ? pkg.name : "Not sure which option yet"}
+        </p>
+
+        <p className="mt-3 text-3xl font-extrabold tracking-tight text-ink">
+          {quote.onceTotal > 0 && formatKes(quote.onceTotal)}
+          {quote.onceTotal > 0 && quote.monthlyTotal > 0 && " + "}
+          {quote.monthlyTotal > 0 && (
+            <>
+              {formatKes(quote.monthlyTotal)}
+              <span className="text-base font-semibold text-muted">/month</span>
+            </>
+          )}
+          {quote.onceTotal === 0 && quote.monthlyTotal === 0 && (
+            <span className="text-xl">{range ?? "Custom quote"}</span>
+          )}
+        </p>
+        {/* The service's own note already says how it's billed, so this line
+            only adds what the note doesn't. */}
+        {(() => {
+          const line = quote.needsChat
+            ? pkg
+              ? "We'll confirm the exact price after a quick chat."
+              : "We'll help you pick the right option on WhatsApp."
+            : quote.addOns.length > 0
+              ? "Plus your ad budget, which you pay straight to Meta."
+              : quote.onceTotal > 0
+                ? "50% to start, 50% when it's done."
+                : null;
+          return line ? <p className="mt-1 text-sm text-muted">{line}</p> : null;
+        })()}
+
+        {pkg && pkg.features.length > 0 && (
+          <ul className="mt-4 space-y-1.5 border-t border-accent/20 pt-4">
+            {pkg.features.map((f) => (
+              <li key={f} className="flex gap-2 text-sm leading-relaxed text-ink">
+                <span aria-hidden="true" className="text-accent">✓</span>
+                <span>{f}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {service.packagesNote && (
+          <p className="mt-4 text-xs leading-relaxed text-muted">{service.packagesNote}</p>
+        )}
+      </div>
+
+      {/* ------------------------------ add-ons ------------------------------ */}
+      {(service.addOns ?? []).map((a) => {
+        const on = addOns.includes(a.name);
+        return (
+          <label
+            key={a.name}
+            className={`flex cursor-pointer items-start gap-3 rounded-2xl border-2 px-4 py-3.5 transition-colors ${
+              on ? "border-accent bg-accent-tint" : "border-line bg-surface"
+            }`}
+          >
+            <input
+              type="checkbox"
+              name="addOn"
+              value={a.name}
+              checked={on}
+              onChange={() =>
+                setAddOns((cur) => (on ? cur.filter((x) => x !== a.name) : [...cur, a.name]))
+              }
+              className="mt-1 h-5 w-5 shrink-0 accent-[var(--color-accent)]"
+            />
+            <span className="text-sm leading-relaxed">
+              <span className="font-bold text-ink">Add {a.name}</span>{" "}
+              <span className="font-semibold text-accent">+{priceLabel(a)}</span>
+              <span className="block text-muted">{a.summary}</span>
+            </span>
+          </label>
+        );
+      })}
+
+      {/* ------------------------------ who's asking ------------------------------ */}
+      <p className="pt-1 text-sm font-semibold text-ink">
+        Where should we send it?
       </p>
 
-      <input type="hidden" name="service" value={service.title} />
+      <input type="hidden" name="service" value={service.slug} />
       {pkg && <input type="hidden" name="pkg" value={pkg.name} />}
 
       {/* Honeypot: off-screen, never focusable, invisible to a person. */}
@@ -386,22 +475,22 @@ function InquiryForm({ service, pkg }: { service: Service; pkg: Pkg | null }) {
       />
 
       <Field label="Your name" name="name" error={state.fieldErrors?.name}
-        autoComplete="name" placeholder="Eugene Karoki" />
+        autoComplete="name" placeholder="Your full name" />
       <Field label="Business name" name="business" error={state.fieldErrors?.business}
-        autoComplete="organization" placeholder="Skinner's Butchery" />
+        autoComplete="organization" placeholder="Your business or brand" />
       <Field label="Phone number" name="phone" error={state.fieldErrors?.phone}
-        type="tel" inputMode="tel" autoComplete="tel" placeholder="0712 345 678" />
+        type="tel" inputMode="tel" autoComplete="tel" placeholder="07XX XXX XXX" />
 
       <div>
         <label htmlFor="need" className="mb-1.5 block text-sm font-semibold text-ink">
-          What do you need?{" "}
+          Anything we should know?{" "}
           <span className="font-normal text-muted">(optional)</span>
         </label>
         <textarea
           id="need"
           name="need"
           rows={3}
-          placeholder="A shop for my perfumes, about 40 products, M-Pesa checkout."
+          placeholder={needPlaceholder(service.slug)}
           className={`${field} resize-none`}
         />
       </div>
@@ -417,14 +506,28 @@ function InquiryForm({ service, pkg }: { service: Service; pkg: Pkg | null }) {
                    transition-colors hover:bg-accent-hover disabled:opacity-60
                    focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
       >
-        {pending ? "One moment…" : "Continue on WhatsApp"}
+        {pending ? "One sec…" : "Send me this quote on WhatsApp"}
       </button>
 
       <p className="text-center text-xs leading-relaxed text-muted">
-        We only use this to reply to you. Nothing else, ever.
+        We only use your details to reply to you.
       </p>
     </form>
   );
+}
+
+/** Example text for the "anything we should know" box — shaped to the service. */
+function needPlaceholder(slug: string): string {
+  switch (slug) {
+    case "websites":
+      return "e.g. We're a small clinic and want to show our services and location.";
+    case "ecommerce":
+      return "e.g. I sell shoes, about 50 products, and deliver around Nairobi.";
+    case "digital-marketing":
+      return "e.g. We're on Instagram and TikTok but not getting enquiries.";
+    default:
+      return "e.g. We track orders on WhatsApp and a spreadsheet and it's getting messy.";
+  }
 }
 
 function Field({

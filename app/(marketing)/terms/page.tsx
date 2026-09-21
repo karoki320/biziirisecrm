@@ -20,8 +20,8 @@ export default function TermsPage() {
         Terms of engagement
       </h1>
       <p className="mt-5 text-lg leading-relaxed text-muted">
-        What you can expect from us, and what we need from you. Written to be read
-        once and understood, not to hide anything in clause 14.
+        What you can expect from us, and what we need from you. Plain English,
+        no hidden small print.
       </p>
 
       <div className="mt-10 space-y-9">
@@ -39,11 +39,11 @@ export default function TermsPage() {
 
       <div className="mt-12 rounded-2xl border-2 border-accent bg-accent-tint px-6 py-7">
         <h2 className="text-xl font-extrabold tracking-tight text-ink">
-          No printing, no courier, no trip into town
+          Sign online in a minute
         </h2>
         <p className="mt-2.5 leading-relaxed text-muted">
-          Tick a box, get your signed agreement as a PDF in your inbox. It carries the
-          same weight as ink on paper.
+          Tick a box and your signed agreement comes straight to your inbox as a PDF.
+          It counts just like signing on paper.
         </p>
         <Link
           href="/agreement"
@@ -55,8 +55,8 @@ export default function TermsPage() {
       </div>
 
       <p className="mt-10 text-sm leading-relaxed text-muted">
-        Questions about any of this? Message us before you accept &mdash; we would rather
-        explain a clause than have you agree to something you are unsure about.
+        Not sure about something? Message us before you agree &mdash; we&rsquo;re happy
+        to explain.
       </p>
     </main>
   );

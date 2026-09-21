@@ -94,7 +94,7 @@ export async function buildAgreementPdf(input: AgreementInput): Promise<Uint8Arr
   // ------------------------------ masthead ------------------------------
   write(site.legalName.toUpperCase(), { font: bold, size: 9, color: ACCENT });
   space(6);
-  write("Agreement for services", { font: bold, size: 20 });
+  write("Service agreement", { font: bold, size: 20 });
   space(2);
   write(
     `Reference ${input.reference} · Terms version ${TERMS_VERSION}`,
@@ -128,10 +128,10 @@ export async function buildAgreementPdf(input: AgreementInput): Promise<Uint8Arr
   rule();
 
   // ------------------------------ acceptance ------------------------------
-  write("Acceptance", { font: bold, size: 12, gap: 4 });
+  write("Signed", { font: bold, size: 12, gap: 4 });
   write(
-    `${input.fullName}, for and on behalf of ${input.business}, accepted these terms ` +
-      `electronically on ${input.acceptedAt.toUTCString()} by ticking the acceptance box at ` +
+    `${input.fullName}, on behalf of ${input.business}, agreed to these terms ` +
+      `online on ${input.acceptedAt.toUTCString()} by ticking the box at ` +
       `${site.url}/agreement.`,
     { size: 10 },
   );
@@ -142,16 +142,15 @@ export async function buildAgreementPdf(input: AgreementInput): Promise<Uint8Arr
   );
   space(4);
   write(
-    "Under the Kenya Information and Communications Act, an electronic acceptance recorded " +
-      "this way has the same legal effect as a handwritten signature. No physical signing is " +
-      "required for this agreement to be binding on both parties.",
+    "Under the Kenya Information and Communications Act, agreeing online like this counts the " +
+      "same as a handwritten signature. No paper signing is needed.",
     { size: 9, color: MUTED },
   );
 
   rule();
 
   // ------------------------------ the terms ------------------------------
-  write("Terms of engagement", { font: bold, size: 12, gap: 6 });
+  write("The terms", { font: bold, size: 12, gap: 6 });
 
   for (const clause of terms) {
     space(6);

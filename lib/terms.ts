@@ -11,7 +11,7 @@
  * for anything that matters.
  */
 
-export const TERMS_VERSION = "2026-09-17";
+export const TERMS_VERSION = "2026-09-21";
 
 export type TermsClause = { heading: string; body: string[] };
 
@@ -19,93 +19,93 @@ export const terms: TermsClause[] = [
   {
     heading: "1. Who this is between",
     body: [
-      "These terms are between Biziirise Digital Agency (“we”, “us”), of Norfolk Towers, Kijabe Street, Nairobi, and the business named in this agreement (“you”).",
-      "They apply to the service and package named in this agreement. If we later agree different work, we will record it separately.",
+      "This agreement is between Biziirise Digital Agency (\u201cus\u201d), Norfolk Towers, Kijabe Street, Nairobi, and the business named in it (\u201cyou\u201d).",
+      "It covers the service and package named here. If we agree on extra work later, we'll put that in writing separately.",
     ],
   },
   {
-    heading: "2. What we will do",
+    heading: "2. What we'll do",
     body: [
-      "We will deliver the service and package described in this agreement, to the scope published on our website on the date you accepted these terms.",
-      "We will tell you at the start what we need from you — content, photographs, logins, approvals — and by when. Work pauses if those do not arrive, and the timeline moves by the same number of days.",
-      "Anything outside the agreed package is new work. We will quote it before starting, never after.",
+      "Deliver the service and package in this agreement, as described on our website on the day you agreed.",
+      "Tell you upfront what we need from you \u2014 content, photos, logins, approvals \u2014 and by when. If something's late, the project pauses and the deadline moves by the same number of days.",
+      "Quote any extra work before we start it. Never after.",
     ],
   },
   {
-    heading: "3. What you will do",
+    heading: "3. What we need from you",
     body: [
-      "Give us accurate information and the content we ask for, and confirm you have the right to use any material you send us — photographs, logos, text, product images.",
-      "Name one person who can approve work. Approval by that person is approval.",
-      "Respond to review requests within five working days. After fourteen days without a response we may treat a stage as approved so the project does not stall indefinitely.",
+      "Correct information, and the content we ask for. Anything you send us \u2014 photos, logos, text \u2014 you must have the right to use.",
+      "One person who can approve work for your business. When they approve something, it's approved.",
+      "Feedback within five working days. If we hear nothing for fourteen days, we may treat that stage as approved so the project doesn't get stuck.",
     ],
   },
   {
-    heading: "4. Money",
+    heading: "4. Payment",
     body: [
-      "Prices are in Kenyan Shillings and are those published on our website for the package named in this agreement, unless we have quoted you separately in writing.",
-      "We ask for 50% before work starts and the balance on delivery, before handover of final files or transfer of hosting. A retainer service is billed monthly in advance.",
-      "Advertising budgets are not our fee. You pay Meta, Google or any other platform directly. We never hold your ad spend.",
-      "Invoices are due within seven days. Work may pause on an overdue invoice, and we will tell you before it does.",
+      "Prices are in Kenyan Shillings, as shown on our website for your package \u2014 unless we've quoted you differently in writing.",
+      "One-off projects: 50% to start, 50% when it's done and before we hand over the final files. Monthly services are paid at the start of each month.",
+      "Ad budgets aren't part of our fee. You pay Meta, Google or any other platform directly \u2014 we never hold your ad money.",
+      "Invoices are due within seven days. If one is overdue, we may pause work \u2014 but we'll tell you first.",
     ],
   },
   {
-    heading: "5. Revisions",
+    heading: "5. Changes",
     body: [
-      "Each package includes two rounds of revisions at each stage. A revision is a change to work already agreed; a change of direction after approval is new work.",
-      "We would rather talk than argue about definitions. If something is not right, say so early and plainly.",
+      "Every package comes with two rounds of changes at each stage. A change means tweaking what we agreed. Changing direction after you've approved something counts as new work.",
+      "If something isn't right, tell us early. We'd much rather fix it than argue about it.",
     ],
   },
   {
     heading: "6. Who owns what",
     body: [
-      "When you have paid in full, you own the final deliverables — the website, the designs, the content we produced for you.",
-      "We keep ownership of our own tools, frameworks and anything we built before this project or use across clients. You get a licence to use those as part of your deliverable, for as long as you like.",
-      "Third-party components — fonts, stock images, plugins — stay under their own licences, and we will tell you which those are.",
+      "Once you've paid in full, the final work is yours \u2014 your website, your designs, the content we made for you.",
+      "Our own tools and code we reuse across projects stay ours, but you can use them as part of your project for as long as you like.",
+      "Things from other companies \u2014 fonts, stock photos, plugins \u2014 come with their own licences. We'll tell you which ones you're using.",
     ],
   },
   {
-    heading: "7. Showing the work",
+    heading: "7. Showing off your project",
     body: [
-      "We would like to show what we built for you in our portfolio and on social media. You can say no, now or later, and we will take it down.",
-      "We will never publish your data, your customers' data, or anything you have told us is confidential.",
+      "We'd like to show your project in our portfolio and on social media. You can say no \u2014 now or any time later \u2014 and we'll take it down.",
+      "We'll never share your data, your customers' data, or anything you tell us is private.",
     ],
   },
   {
-    heading: "8. Confidentiality and data",
+    heading: "8. Privacy and your data",
     body: [
-      "We treat your business information as confidential and will not share it except with people working on your project.",
-      "Where we handle personal data belonging to your customers, we do so only to deliver this service, in line with the Data Protection Act, 2019.",
-      "We hold logins and credentials only as long as we need them, and hand them over at the end.",
+      "Your business information stays between us and the people working on your project.",
+      "If we handle your customers' personal data, we only use it to deliver your project, in line with Kenya's Data Protection Act, 2019.",
+      "We only keep your logins and passwords as long as we need them, and hand everything back at the end.",
     ],
   },
   {
-    heading: "9. After handover",
+    heading: "9. After we hand over",
     body: [
-      "We fix faults in our own work free for 30 days after delivery. A fault is something not working as agreed — not a new feature or a change of mind.",
-      "Hosting, domains and third-party services are billed by those providers. We will tell you what they cost before you commit.",
-      "Ongoing support and maintenance are a separate arrangement.",
+      "For 30 days after delivery, we fix anything in our work that doesn't work as agreed \u2014 free. New features or changes of mind aren't included.",
+      "Hosting, domains and other services are billed by those providers. We'll tell you the costs before you sign up.",
+      "Ongoing support is a separate arrangement.",
     ],
   },
   {
-    heading: "10. Ending it",
+    heading: "10. Ending the agreement",
     body: [
-      "Either of us may end this in writing. You pay for work completed to that point; we hand over what has been paid for.",
-      "A monthly retainer needs 30 days' notice, in writing, from either side.",
+      "Either of us can end this agreement in writing. You pay for the work done so far, and we hand over everything you've paid for.",
+      "Monthly services need 30 days' written notice from either side.",
     ],
   },
   {
     heading: "11. Limits",
     body: [
-      "We do not guarantee particular business results — rankings, sales, followers or leads. We guarantee the work we agreed to do, done properly.",
-      "Our total liability is limited to the fees you have paid us for the affected work.",
-      "Neither of us is liable for delays caused by things genuinely outside our control.",
+      "We can't promise specific results \u2014 sales, rankings, followers or leads. We promise to do the agreed work, and do it well.",
+      "The most we can be liable for is what you've paid us for the work in question.",
+      "Neither of us is responsible for delays caused by things truly out of our control.",
     ],
   },
   {
-    heading: "12. Law, and how you accepted this",
+    heading: "12. The law, and how you signed",
     body: [
-      "These terms are governed by the laws of Kenya. We will try to resolve any dispute by talking before anything else.",
-      "You accepted these terms by ticking the box on our website. We record the date, time and the version of these terms you saw. Under the Kenya Information and Communications Act, that acceptance has the same effect as a signature on paper.",
+      "This agreement follows the laws of Kenya. If we disagree on something, we'll try to sort it out by talking first.",
+      "You agreed by ticking a box on our website. We record the date, time and which version of these terms you saw. Under the Kenya Information and Communications Act, that counts the same as signing on paper.",
     ],
   },
 ];
