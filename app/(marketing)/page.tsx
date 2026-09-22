@@ -7,7 +7,11 @@ import { services } from "@/lib/services";
 import { BiziiriseHeroVisual } from "@/components/hero/biziirise-hero-visual";
 
 export const metadata: Metadata = {
-  title: `${site.legalName} — ${site.tagline}`,
+  // `absolute` skips the "| Biziirise" suffix — the brand is already first.
+  // Kept under ~60 characters so Google shows it whole.
+  title: { absolute: "Biziirise — Websites, Online Shops & Marketing in Kenya" },
+  description:
+    "Websites from KES 10,000, online shops with M-Pesa from KES 35,000, and social media marketing from KES 20,000 a month. Built in Nairobi. Get a quote in minutes.",
   alternates: { canonical: "/" },
 };
 
