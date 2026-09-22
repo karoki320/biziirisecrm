@@ -88,7 +88,7 @@ export default async function PortalLayout({
 
       <footer className="border-t border-line">
         <p className="mx-auto max-w-5xl px-5 py-6 text-xs text-muted">
-          Something wrong here? Message us on {site.phone}.
+          Something wrong here? Message us on {site.phoneDisplay}.
         </p>
       </footer>
     </div>

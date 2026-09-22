@@ -179,7 +179,7 @@ export default function WorkPage() {
             <WhatsAppCta context="Work page" />
           </div>
           <p className="mt-8 text-sm text-muted">
-            Prefer to talk? {site.phone}
+            Prefer to talk? {site.phoneDisplay}
           </p>
         </div>
       </section>

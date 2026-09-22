@@ -17,15 +17,51 @@ export const metadata: Metadata = {
 
 
 export default function HomePage() {
+  // What Google reads to understand the business. Kept in step with the
+  // footer and the Google Business Profile — all three from lib/site.ts.
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "ProfessionalService",
+    "@id": `${site.url}/#business`,
     name: site.legalName,
+    alternateName: site.name,
     url: site.url,
+    logo: `${site.url}/icon.png`,
+    image: `${site.url}/opengraph-image.png`,
     telephone: site.phone,
     email: site.email,
-    areaServed: { "@type": "Country", name: "Kenya" },
-    address: { "@type": "PostalAddress", addressLocality: "Nairobi", addressCountry: "KE" },
+    priceRange: "KES 10,000 – 120,000",
+    currenciesAccepted: "KES",
+    paymentAccepted: "M-Pesa, Bank transfer",
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: site.address.street,
+      addressLocality: site.address.city,
+      addressRegion: site.address.region,
+      addressCountry: site.address.country,
+    },
+    hasMap: site.mapsUrl,
+    areaServed: [
+      { "@type": "City", name: "Nairobi" },
+      { "@type": "Country", name: "Kenya" },
+    ],
+    contactPoint: {
+      "@type": "ContactPoint",
+      telephone: site.phone,
+      email: site.email,
+      contactType: "sales",
+      areaServed: "KE",
+      availableLanguage: ["English", "Swahili"],
+    },
+    knowsAbout: [
+      "Website design",
+      "Ecommerce websites",
+      "M-Pesa integration",
+      "Social media marketing",
+      "Meta ads",
+      "Business automation",
+      "CRM systems",
+    ],
     sameAs: [site.socials.instagram, site.socials.tiktok],
     description: site.tagline,
   };

@@ -53,6 +53,21 @@ export const site = {
    */
   inbox: "biziirise@gmail.com",
   phone: "+254141025616",
+  /** Same format everywhere it's shown — Google compares it with the Business Profile. */
+  phoneDisplay: "+254 141 025 616",
+  /**
+   * Must match the Google Business Profile word for word. Google cross-checks
+   * name, address and phone across the site, the profile and directories;
+   * mismatches weaken the map listing.
+   */
+  address: {
+    street: "Norfolk Towers, Kijabe Street",
+    city: "Nairobi",
+    region: "Nairobi County",
+    country: "KE",
+    countryName: "Kenya",
+  },
+  mapsUrl: "https://www.google.com/maps/search/?api=1&query=Norfolk+Towers%2C+Kijabe+Street%2C+Nairobi",
   /** wa.me needs the number with no +, spaces or dashes. */
   whatsappNumber: "254141025616",
   whatsappPrefill: "Hi Biziirise, I'd like to talk about a project",

@@ -31,9 +31,16 @@ export function SiteFooter() {
 
         <div>
           <h2 className="text-sm font-semibold text-ink">Talk to us</h2>
-          <ul className="mt-4 space-y-2.5 text-sm text-muted">
+          <address className="mt-4 text-sm not-italic leading-relaxed text-muted">
+            <a className="hover:text-ink" href={site.mapsUrl} target="_blank" rel="noopener noreferrer">
+              {site.address.street}
+              <br />
+              {site.address.city}, {site.address.countryName}
+            </a>
+          </address>
+          <ul className="mt-2.5 space-y-2.5 text-sm text-muted">
             <li>
-              <a className="hover:text-ink" href={`tel:${site.phone}`}>{site.phone}</a>
+              <a className="hover:text-ink" href={`tel:${site.phone}`}>{site.phoneDisplay}</a>
             </li>
             <li>
               <a className="hover:text-ink" href={`mailto:${site.email}`}>{site.email}</a>

@@ -86,7 +86,7 @@ export default async function InvoicesPage() {
 
       <p className="mt-8 text-sm leading-relaxed text-muted">
         Paying by M-Pesa from this page arrives in Phase 3. For now, message us
-        on {site.phone} and we will send you the Paybill details.
+        on {site.phoneDisplay} and we will send you the Paybill details.
       </p>
     </>
   );
