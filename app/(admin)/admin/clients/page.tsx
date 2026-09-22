@@ -45,10 +45,10 @@ export default async function ClientsPage() {
       ) : (
         <ul className="mt-8 flex flex-col gap-px overflow-hidden rounded-card border border-line bg-line">
           {clients.map((c) => (
-            <li key={c.id} className="bg-cream">
+            <li key={c.id} className="flex items-stretch bg-cream">
               <Link
                 href={`/admin/clients/${c.id}`}
-                className="flex flex-wrap items-center justify-between gap-x-6 gap-y-1 px-6 py-4 transition-colors hover:bg-cream-deep"
+                className="flex min-w-0 flex-1 flex-wrap items-center justify-between gap-x-6 gap-y-1 px-6 py-4 transition-colors hover:bg-cream-deep"
               >
                 <div className="min-w-0">
                   <p className="font-medium text-ink">{c.name}</p>
@@ -59,6 +59,13 @@ export default async function ClientsPage() {
                 <span className="shrink-0 font-mono text-xs text-muted">
                   since {shortDate(c.created_at)}
                 </span>
+              </Link>
+              <Link
+                href={`/admin/clients/${c.id}#details`}
+                aria-label={`Edit ${c.name}`}
+                className="flex shrink-0 items-center border-l border-line px-5 text-sm font-semibold text-accent transition-colors hover:bg-cream-deep"
+              >
+                Edit
               </Link>
             </li>
           ))}

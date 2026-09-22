@@ -45,10 +45,20 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
         <span aria-hidden="true">←</span> Clients
       </Link>
 
-      <h1 className="mt-5 text-2xl font-extrabold tracking-tight text-ink sm:text-3xl">
-        {client.name}
-      </h1>
-      {client.company && <p className="mt-1 text-muted">{client.company}</p>}
+      <div className="mt-5 flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h1 className="text-2xl font-extrabold tracking-tight text-ink sm:text-3xl">
+            {client.name}
+          </h1>
+          {client.company && <p className="mt-1 text-muted">{client.company}</p>}
+        </div>
+        <a
+          href="#details"
+          className="inline-flex items-center gap-1.5 rounded-full border border-line bg-cream px-4 py-2 text-sm font-semibold text-ink transition-colors hover:border-accent hover:text-accent"
+        >
+          ✎ Edit details
+        </a>
+      </div>
 
       <dl className="mt-8 grid gap-px overflow-hidden rounded-card border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
         {[
@@ -63,6 +73,48 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
           </div>
         ))}
       </dl>
+
+      {/* ------------------------------------------------- edit details */}
+      <section id="details" className="mt-12 scroll-mt-24">
+        <h2 className="font-mono text-xs font-semibold uppercase tracking-wider text-muted">
+          Edit details
+        </h2>
+        <div className="mt-4 rounded-card border border-line bg-cream-deep p-6">
+          <ActionForm action={updateClientRecord} submitLabel="Save details">
+            <input type="hidden" name="id" value={client.id} />
+            <div className="grid gap-3 sm:grid-cols-2">
+              {/* Labels, not just placeholders: once a field is filled the
+                  placeholder disappears and you can't tell what it was. */}
+              <label className="block">
+                <span className="mb-1.5 block text-xs font-semibold text-muted">Client name</span>
+                <input name="name" required defaultValue={client.name} placeholder="Client name" className={field} />
+              </label>
+              <label className="block">
+                <span className="mb-1.5 block text-xs font-semibold text-muted">Business name</span>
+                <input name="company" defaultValue={client.company ?? ""} placeholder="Business name" className={field} />
+              </label>
+              <label className="block">
+                <span className="mb-1.5 block text-xs font-semibold text-muted">Email</span>
+                <input name="email" type="email" defaultValue={client.email ?? ""} placeholder="Email" className={field} />
+              </label>
+              <label className="block">
+                <span className="mb-1.5 block text-xs font-semibold text-muted">Phone</span>
+                <input name="phone" defaultValue={client.phone ?? ""} placeholder="07xx xxx xxx" className={field} />
+              </label>
+              <label className="block sm:col-span-2">
+                <span className="mb-1.5 block text-xs font-semibold text-muted">Notes</span>
+                <textarea
+                  name="notes"
+                  rows={3}
+                  defaultValue={client.notes ?? ""}
+                  placeholder="Anything worth remembering"
+                  className={field}
+                />
+              </label>
+            </div>
+          </ActionForm>
+        </div>
+      </section>
 
       {/* ------------------------------------------------ portal access */}
       <section className="mt-12">
@@ -111,31 +163,6 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
                 className={field}
               />
               <input name="fullName" placeholder="Their name (optional)" className={field} />
-            </div>
-          </ActionForm>
-        </div>
-      </section>
-
-      {/* ------------------------------------------------- edit details */}
-      <section className="mt-12">
-        <h2 className="font-mono text-xs font-semibold uppercase tracking-wider text-muted">
-          Details
-        </h2>
-        <div className="mt-4 rounded-card border border-line bg-cream-deep p-6">
-          <ActionForm action={updateClientRecord} submitLabel="Save details">
-            <input type="hidden" name="id" value={client.id} />
-            <div className="grid gap-3 sm:grid-cols-2">
-              <input name="name" required defaultValue={client.name} placeholder="Client name" className={field} />
-              <input name="company" defaultValue={client.company ?? ""} placeholder="Business name" className={field} />
-              <input name="email" type="email" defaultValue={client.email ?? ""} placeholder="Email" className={field} />
-              <input name="phone" defaultValue={client.phone ?? ""} placeholder="07xx xxx xxx" className={field} />
-              <textarea
-                name="notes"
-                rows={3}
-                defaultValue={client.notes ?? ""}
-                placeholder="Anything worth remembering"
-                className={`${field} sm:col-span-2`}
-              />
             </div>
           </ActionForm>
         </div>
