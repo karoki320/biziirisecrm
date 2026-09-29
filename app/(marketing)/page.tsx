@@ -107,6 +107,13 @@ export default function HomePage() {
                 <p className="mt-3.5 text-sm text-muted">
                   Rather just talk? Message us — we usually reply within the hour.
                 </p>
+                <Link
+                  href="/get-started"
+                  className="mt-4 inline-flex items-center gap-1.5 text-base font-semibold text-accent underline underline-offset-4"
+                >
+                  Setting up a shop or restaurant? Start here
+                  <span aria-hidden="true">&rarr;</span>
+                </Link>
               </div>
             </div>
           </div>

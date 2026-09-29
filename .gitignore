@@ -18,3 +18,8 @@ Claude outputs/
 
 # Local credentials for the Claude session. Never commit.
 .claude-keys.local
+
+# Session transfer tarballs and scanned business documents. Never commit.
+*.tgz
+*.tar.gz
+*.pdf

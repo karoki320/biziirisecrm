@@ -41,6 +41,23 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
           ["Phone", lead.phone ?? "—"],
           ["Email", lead.email ?? "—"],
           ["First seen", shortDate(lead.created_at)],
+          // Only from the /get-started form; blank for leads from elsewhere.
+          ...(lead.business_name
+            ? ([
+                ["Business", lead.business_name],
+                ["Type", lead.business_type ?? "—"],
+                ["Location", lead.location ?? "—"],
+                ["Branches", lead.branches ?? "—"],
+                [
+                  "Sells online",
+                  lead.sells_online === null ? "—" : lead.sells_online ? "Yes" : "No",
+                ],
+                [
+                  "Campaign",
+                  [lead.utm_source, lead.utm_campaign].filter(Boolean).join(" / ") || "—",
+                ],
+              ] as [string, string][])
+            : []),
         ].map(([label, value]) => (
           <div key={label} className="bg-cream px-5 py-4">
             <dt className="font-mono text-xs uppercase tracking-wider text-muted">{label}</dt>

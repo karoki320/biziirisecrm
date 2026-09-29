@@ -27,6 +27,14 @@ export type Lead = {
   converted_client_id: string | null;
   last_contacted_at: string | null;
   created_at: string;
+  /* Filled in by the /get-started form; null on leads from anywhere else. */
+  business_name: string | null;
+  business_type: string | null;
+  location: string | null;
+  branches: string | null;
+  sells_online: boolean | null;
+  utm_source: string | null;
+  utm_campaign: string | null;
 };
 
 export type ClientRow = {
@@ -78,7 +86,7 @@ export type Payment = {
 export const LEAD_STAGES: { key: LeadStatus; label: string }[] = [
   { key: "new", label: "New" },
   { key: "contacted", label: "Contacted" },
-  { key: "proposal", label: "Proposal" },
+  { key: "proposal", label: "Quoted" },
   { key: "won", label: "Won" },
   { key: "lost", label: "Lost" },
 ];
