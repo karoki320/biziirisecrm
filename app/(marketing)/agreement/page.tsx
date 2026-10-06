@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 export default function AgreementPage() {
   return (
-    <main className="mx-auto max-w-2xl px-5 py-16 sm:py-20">
+    <div className="mx-auto max-w-2xl px-5 py-16 sm:py-20">
       <h1 className="text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">
         Sign your agreement online
       </h1>
@@ -32,6 +32,6 @@ export default function AgreementPage() {
       <div className="mt-10">
         <AgreementForm />
       </div>
-    </main>
+    </div>
   );
 }

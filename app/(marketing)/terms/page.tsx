@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <main className="mx-auto max-w-3xl px-5 py-16 sm:py-20">
+    <div className="mx-auto max-w-3xl px-5 py-16 sm:py-20">
       <p className="text-xs font-semibold uppercase tracking-wider text-accent">
         Version {TERMS_VERSION}
       </p>
@@ -58,6 +58,6 @@ export default function TermsPage() {
         Not sure about something? Message us before you agree &mdash; we&rsquo;re happy
         to explain.
       </p>
-    </main>
+    </div>
   );
 }

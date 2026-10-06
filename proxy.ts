@@ -73,6 +73,19 @@ export async function proxy(request: NextRequest) {
       url.pathname = "/portal";
       return NextResponse.redirect(url);
     }
+
+    // Owner-only corners of the CRM. Sales sees leads, clients and projects;
+    // money and the team list are not theirs. RLS enforces the same split on
+    // the rows, so this only saves them from a page that would come back empty.
+    const OWNER_ONLY = ["/admin/invoices", "/admin/team"];
+    if (
+      profile.role !== "admin" &&
+      OWNER_ONLY.some((p) => pathname === p || pathname.startsWith(`${p}/`))
+    ) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/admin";
+      return NextResponse.redirect(url);
+    }
   }
 
   return response;

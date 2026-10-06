@@ -8,6 +8,7 @@ import { WhatsAppCta } from "./whatsapp-cta";
 
 const nav = [
   { href: "/services", label: "Services" },
+  { href: "/demos", label: "Demos" },
   { href: "/work", label: "Work" },
   { href: "/blog", label: "Blog" },
 ];

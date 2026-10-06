@@ -4,20 +4,31 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
-import { isAdmin } from "@/lib/admin";
+import { isAdmin, isStaff } from "@/lib/admin";
 import { stkPush } from "@/lib/mpesa";
 import { toE164Kenya } from "@/lib/whatsapp";
 
 export type ActionState = { error?: string; ok?: string };
 
 /**
- * Every action re-checks admin server-side. The proxy gates the page shell and
- * RLS gates the rows, but an action is its own entry point and is checked on
- * its own terms.
+ * Every action re-checks the caller server-side. The proxy gates the page
+ * shell and RLS gates the rows, but an action is its own entry point and is
+ * checked on its own terms.
+ *
+ * Two guards, because the CRM now has two kinds of person in it. The selling
+ * work is staff-and-above; anything involving money is owner-only, and the
+ * database agrees — `is_admin()` in migration 0007 is narrowed to match, so
+ * a mistake here still fails closed one layer down.
  */
+async function requireStaff() {
+  if (!isSupabaseConfigured()) throw new Error("Not configured");
+  if (!(await isStaff())) redirect("/portal");
+  return createClient();
+}
+
 async function requireAdmin() {
   if (!isSupabaseConfigured()) throw new Error("Not configured");
-  if (!(await isAdmin())) redirect("/portal");
+  if (!(await isAdmin())) redirect("/admin");
   return createClient();
 }
 
@@ -26,7 +37,7 @@ async function requireAdmin() {
 const LEAD_STATUSES = ["new", "contacted", "proposal", "won", "lost"] as const;
 
 export async function setLeadStatus(_prev: ActionState, formData: FormData): Promise<ActionState> {
-  const supabase = await requireAdmin();
+  const supabase = await requireStaff();
   const id = String(formData.get("id") ?? "");
   const status = String(formData.get("status") ?? "");
 
@@ -46,7 +57,7 @@ export async function setLeadStatus(_prev: ActionState, formData: FormData): Pro
 }
 
 export async function saveLeadNotes(_prev: ActionState, formData: FormData): Promise<ActionState> {
-  const supabase = await requireAdmin();
+  const supabase = await requireStaff();
   const id = String(formData.get("id") ?? "");
   const notes = String(formData.get("notes") ?? "").slice(0, 8000);
 
@@ -71,7 +82,7 @@ const newLeadSchema = z.object({
  * only required field.
  */
 export async function createLead(_prev: ActionState, formData: FormData): Promise<ActionState> {
-  const supabase = await requireAdmin();
+  const supabase = await requireStaff();
 
   const parsed = newLeadSchema.safeParse({
     name: formData.get("name"),
@@ -98,7 +109,7 @@ export async function createLead(_prev: ActionState, formData: FormData): Promis
 
 /** Won lead becomes a client record, and the two stay linked. */
 export async function convertLeadToClient(_prev: ActionState, formData: FormData): Promise<ActionState> {
-  const supabase = await requireAdmin();
+  const supabase = await requireStaff();
   const id = String(formData.get("id") ?? "");
 
   const { data: lead } = await supabase.from("leads").select("*").eq("id", id).maybeSingle();
@@ -134,7 +145,7 @@ export async function convertLeadToClient(_prev: ActionState, formData: FormData
 const PROJECT_STATUSES = ["requested", "in_progress", "review", "delivered"] as const;
 
 export async function setProjectStatus(_prev: ActionState, formData: FormData): Promise<ActionState> {
-  const supabase = await requireAdmin();
+  const supabase = await requireStaff();
   const id = String(formData.get("id") ?? "");
   const status = String(formData.get("status") ?? "");
   const clientId = String(formData.get("clientId") ?? "");
@@ -158,7 +169,7 @@ export async function setProjectStatus(_prev: ActionState, formData: FormData): 
 }
 
 export async function createProject(_prev: ActionState, formData: FormData): Promise<ActionState> {
-  const supabase = await requireAdmin();
+  const supabase = await requireStaff();
   const clientId = String(formData.get("clientId") ?? "");
   const name = String(formData.get("name") ?? "").trim();
   const summary = String(formData.get("summary") ?? "").trim();

@@ -22,6 +22,7 @@ export function SiteFooter() {
           <h2 className="text-sm font-semibold text-ink">Company</h2>
           <ul className="mt-4 space-y-2.5 text-sm text-muted">
             <li><Link className="hover:text-ink" href="/services">Services</Link></li>
+            <li><Link className="hover:text-ink" href="/demos">Demos</Link></li>
             <li><Link className="hover:text-ink" href="/work">Work</Link></li>
             <li><Link className="hover:text-ink" href="/blog">Blog</Link></li>
             <li><Link className="hover:text-ink" href="/login">Client portal</Link></li>

@@ -5,15 +5,23 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { isAdmin } from "@/lib/admin";
+import { isAdmin, isStaff } from "@/lib/admin";
 import { toE164Kenya } from "@/lib/whatsapp";
 import { site } from "@/lib/site";
 
 export type ActionState = { error?: string; ok?: string };
 
+/** Adding and editing a client is sales work. */
+async function requireStaff() {
+  if (!isSupabaseConfigured()) throw new Error("Not configured");
+  if (!(await isStaff())) redirect("/portal");
+  return createClient();
+}
+
+/** Handing out a portal login is not. */
 async function requireAdmin() {
   if (!isSupabaseConfigured()) throw new Error("Not configured");
-  if (!(await isAdmin())) redirect("/portal");
+  if (!(await isAdmin())) redirect("/admin");
   return createClient();
 }
 
@@ -40,7 +48,7 @@ export async function createClientRecord(
   _prev: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
-  const supabase = await requireAdmin();
+  const supabase = await requireStaff();
   const parsed = parseClient(formData);
   if (!parsed.success) return { error: parsed.error.issues[0].message };
 
@@ -67,7 +75,7 @@ export async function updateClientRecord(
   _prev: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
-  const supabase = await requireAdmin();
+  const supabase = await requireStaff();
   const id = String(formData.get("id") ?? "");
   const parsed = parseClient(formData);
   if (!parsed.success) return { error: parsed.error.issues[0].message };

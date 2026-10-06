@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function GetStartedPage() {
   return (
-    <main className="mx-auto max-w-lg px-5 pb-16 pt-10 sm:pt-14">
+    <div className="mx-auto max-w-lg px-5 pb-16 pt-10 sm:pt-14">
       <h1 className="text-3xl font-extrabold leading-tight tracking-tight text-ink sm:text-4xl">
         Let&rsquo;s set up your business system
       </h1>
@@ -22,6 +22,6 @@ export default function GetStartedPage() {
       <div className="mt-9">
         <GetStartedForm />
       </div>
-    </main>
+    </div>
   );
 }

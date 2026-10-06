@@ -91,19 +91,45 @@ export const LEAD_STAGES: { key: LeadStatus; label: string }[] = [
   { key: "lost", label: "Lost" },
 ];
 
-export async function isAdmin(): Promise<boolean> {
-  if (!isSupabaseConfigured()) return false;
+export type Role = "admin" | "staff" | "client";
+
+/**
+ * The caller's role, or null if they are not signed in.
+ *
+ * Everything below is derived from this one query so the two checks can
+ * never drift apart — which is exactly how a staff member ends up seeing
+ * the invoices page.
+ */
+export async function currentRole(): Promise<Role | null> {
+  if (!isSupabaseConfigured()) return null;
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return false;
+  if (!user) return null;
   const { data } = await supabase
     .from("profiles")
     .select("role")
     .eq("id", user.id)
     .single();
-  return data?.role === "admin" || data?.role === "staff";
+  return (data?.role as Role | undefined) ?? null;
+}
+
+/**
+ * Owner-level. Money, automation, and the team list itself.
+ *
+ * This used to return true for 'staff' as well. It no longer does, and the
+ * matching `is_admin()` in migration 0007 was narrowed the same way — a
+ * salesperson must not be able to read what every client pays.
+ */
+export async function isAdmin(): Promise<boolean> {
+  return (await currentRole()) === "admin";
+}
+
+/** Can enter the CRM at all: the owner, or a salesperson. */
+export async function isStaff(): Promise<boolean> {
+  const role = await currentRole();
+  return role === "admin" || role === "staff";
 }
 
 /**

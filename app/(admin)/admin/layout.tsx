@@ -4,16 +4,19 @@ import { site } from "@/lib/site";
 import { Logo } from "@/components/logo";
 import { SignOutButton } from "@/components/portal/sign-out-button";
 import { isSupabaseConfigured } from "@/lib/supabase/server";
-import { isAdmin } from "@/lib/admin";
+import { currentRole } from "@/lib/admin";
 
 /** An authenticated back office is never cacheable. */
 export const dynamic = "force-dynamic";
 
+/** `owner` tabs are hidden from sales — and blocked in proxy.ts, and in RLS. */
 const nav = [
-  { href: "/admin", label: "Overview" },
-  { href: "/admin/leads", label: "Leads" },
-  { href: "/admin/clients", label: "Clients" },
-  { href: "/admin/invoices", label: "Invoices" },
+  { href: "/admin", label: "Overview", owner: false },
+  { href: "/admin/leads", label: "Leads", owner: false },
+  { href: "/admin/clients", label: "Clients", owner: false },
+  { href: "/admin/invoices", label: "Invoices", owner: true },
+  { href: "/admin/demos", label: "Demos", owner: false },
+  { href: "/admin/team", label: "Team", owner: true },
 ];
 
 export default async function AdminLayout({
@@ -23,7 +26,9 @@ export default async function AdminLayout({
 
   // proxy.ts gates the shell, RLS gates the rows — this is the third check,
   // because a layout is its own entry point.
-  if (!(await isAdmin())) redirect("/portal");
+  const role = await currentRole();
+  if (role !== "admin" && role !== "staff") redirect("/portal");
+  const tabs = nav.filter((item) => !item.owner || role === "admin");
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -50,7 +55,7 @@ export default async function AdminLayout({
 
         <nav aria-label="CRM" className="mx-auto max-w-6xl px-5">
           <ul className="flex gap-6 overflow-x-auto">
-            {nav.map((item) => (
+            {tabs.map((item) => (
               <li key={item.href}>
                 <Link
                   href={item.href}
