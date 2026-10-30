@@ -6,6 +6,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/supabase/server";
 import { sendEmail } from "@/lib/email";
 import { site } from "@/lib/site";
+import { letterhead } from "@/lib/letterhead";
 import { TERMS_VERSION } from "@/lib/terms";
 import { buildAgreementPdf, agreementReference } from "@/lib/agreement";
 import { toE164Kenya } from "@/lib/whatsapp";
@@ -174,7 +175,7 @@ export async function acceptAgreement(
       text:
         `Hi ${v.fullName},\n\nYour agreement with Biziirise is attached — reference ${reference}. ` +
         `Keep it somewhere safe; it is the record of what we agreed.\n\n` +
-        `Any questions, reply to this email or message us on WhatsApp.\n\n${site.legalName}`,
+        `Any questions, reply to this email or message us on WhatsApp.\n\n${letterhead.name}`,
       tags: [{ name: "type", value: "agreement" }],
       attachments: [attachment],
     });
@@ -207,7 +208,7 @@ function clientEmailHtml(
   </p>
   <p style="margin:0 0 14px">No paperwork to sign or return. We will be in touch about next steps.</p>
   <p style="margin:24px 0 0;color:#5b6472;font-size:14px">
-    Any questions, just reply to this email.<br>${site.legalName} &middot; Nairobi
+    Any questions, just reply to this email.<br>${letterhead.name} &middot; Nairobi
   </p>
 </div>`.trim();
 }

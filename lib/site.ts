@@ -40,6 +40,12 @@ function resolveSiteUrl(): string {
 
 export const site = {
   name: "Biziirise",
+  /**
+   * The name on the WEBSITE. Documents use `letterhead.name`
+   * ("The Biziirise Solutions") instead — see lib/letterhead.ts. Kept apart
+   * on purpose: Google has been indexing this one, and the Business Profile
+   * matches it word for word.
+   */
   legalName: "Biziirise Digital Agency",
   tagline: "Websites, online shops and digital marketing for Kenyan businesses.",
   url: resolveSiteUrl(),
@@ -61,13 +67,13 @@ export const site = {
    * mismatches weaken the map listing.
    */
   address: {
-    street: "Norfolk Towers, Kijabe Street",
+    street: "Norfolk Towers, Kijabe Street, Block G",
     city: "Nairobi",
     region: "Nairobi County",
     country: "KE",
     countryName: "Kenya",
   },
-  mapsUrl: "https://www.google.com/maps/search/?api=1&query=Norfolk+Towers%2C+Kijabe+Street%2C+Nairobi",
+  mapsUrl: "https://www.google.com/maps/search/?api=1&query=Norfolk+Towers%2C+Kijabe+Street%2C+Block+G%2C+Nairobi",
   /** wa.me needs the number with no +, spaces or dashes. */
   whatsappNumber: "254141025616",
   whatsappPrefill: "Hi Biziirise, I'd like to talk about a project",

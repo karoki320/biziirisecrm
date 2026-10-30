@@ -25,11 +25,6 @@ export default function DemosPage() {
       <h1 className="text-3xl font-extrabold leading-tight tracking-tight text-ink sm:text-4xl">
         See it working before you buy it
       </h1>
-      <p className="mt-4 max-w-2xl text-lg leading-relaxed text-muted">
-        These are not screenshots. Tap through them the way your customers and your
-        counter staff would.
-      </p>
-
       <article className="mt-10 rounded-card border border-line bg-surface p-5 sm:p-7">
         <p className="text-xs font-bold uppercase tracking-widest text-accent">
           Website + POS

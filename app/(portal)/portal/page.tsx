@@ -12,6 +12,7 @@ import {
   INVOICE_LABEL,
 } from "@/lib/portal";
 import { StatusTimeline } from "@/components/portal/status-timeline";
+import { getPendingSignatureRequests, requestTitle } from "@/lib/signatures";
 
 export const metadata: Metadata = {
   title: "Your projects",
@@ -19,11 +20,12 @@ export const metadata: Metadata = {
 };
 
 export default async function PortalHome() {
-  const [session, projects, activity, invoices] = await Promise.all([
+  const [session, projects, activity, invoices, toSign] = await Promise.all([
     getPortalSession(),
     getProjects(),
     getActivity(),
     getInvoices(),
+    getPendingSignatureRequests(),
   ]);
 
   const firstName = session?.fullName?.split(" ")[0];
@@ -37,6 +39,24 @@ export default async function PortalHome() {
       <p className="mt-2 leading-relaxed text-muted">
         Where everything we are building for you currently stands.
       </p>
+
+      {toSign.map((r) => (
+        <Link
+          key={r.id}
+          href={`/portal/agreement?id=${r.id}`}
+          className="mt-8 flex flex-wrap items-center justify-between gap-3 rounded-card border-2 border-accent bg-accent-tint px-6 py-5 transition-colors hover:bg-accent-tint/70"
+        >
+          <span>
+            <span className="block font-bold text-ink">Please sign: {requestTitle(r)}</span>
+            <span className="mt-0.5 block text-sm text-muted">
+              Takes a minute. Sign with your finger on your phone.
+            </span>
+          </span>
+          <span className="rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white">
+            Sign now →
+          </span>
+        </Link>
+      ))}
 
       {outstanding.length > 0 && (
         <Link

@@ -8,6 +8,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { isAdmin, isStaff } from "@/lib/admin";
 import { toE164Kenya } from "@/lib/whatsapp";
 import { site } from "@/lib/site";
+import { createSignatureRequest } from "@/app/actions/signatures";
 
 export type ActionState = { error?: string; ok?: string };
 
@@ -100,6 +101,19 @@ export async function updateClientRecord(
 }
 
 /**
+ * If the invite form asked for it, put "Sign your service agreement" in the
+ * client's portal. Returns a sentence to append to the invite's message.
+ */
+async function maybeRequestSignature(formData: FormData, clientId: string, email: string, fullName: string) {
+  if (formData.get("requestSignature") !== "on") return "";
+  // The invite form's own name/email fields are the signer's defaults.
+  const result = await createSignatureRequest(clientId, formData, { fullName, email });
+  return result.error
+    ? ` But the signing request failed: ${result.error}`
+    : " They'll be asked to sign the service agreement when they open the portal.";
+}
+
+/**
  * Invite a client into the portal.
  *
  * This is the one place in the CRM that needs the service-role key: creating an
@@ -149,8 +163,9 @@ export async function inviteClientToPortal(
     if (!existing) return { error: error.message };
 
     await admin.from("profiles").update({ client_id: clientId, full_name: fullName || null }).eq("id", existing.id);
+    const note = await maybeRequestSignature(formData, clientId, email.data, fullName);
     revalidatePath(`/admin/clients/${clientId}`);
-    return { ok: "That email already had an account — it is now linked to this client." };
+    return { ok: `That email already had an account — it is now linked to this client.${note}` };
   }
 
   const userId = data.user?.id;
@@ -163,8 +178,9 @@ export async function inviteClientToPortal(
 
   if (linkError) return { error: `Invited, but linking failed: ${linkError.message}` };
 
+  const note = await maybeRequestSignature(formData, clientId, email.data, fullName);
   revalidatePath(`/admin/clients/${clientId}`);
-  return { ok: `Invitation sent to ${email.data}.` };
+  return { ok: `Invitation sent to ${email.data}.${note}` };
 }
 
 /** Unlink a portal login from a client. Does not delete their account. */

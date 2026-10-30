@@ -44,12 +44,6 @@ export default async function ShopDemoPage({
           <>An online shop and a till that talk to each other</>
         )}
       </h1>
-      <p className="mt-4 text-lg leading-relaxed text-muted">
-        This is the real thing, not pictures. Sell something at the counter, then buy
-        something on the online shop. Both land in the same back office and the same
-        stock count drops.
-      </p>
-
       <div className="mt-8">
         <ShopDemo catalogue={catalogue} businessName={businessName} accent={accent} />
       </div>

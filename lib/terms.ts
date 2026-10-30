@@ -19,7 +19,7 @@ export const terms: TermsClause[] = [
   {
     heading: "1. Who this is between",
     body: [
-      "This agreement is between Biziirise Digital Agency (\u201cus\u201d), Norfolk Towers, Kijabe Street, Nairobi, and the business named in it (\u201cyou\u201d).",
+      "This agreement is between The Biziirise Solutions (\u201cus\u201d), Norfolk Towers, Kijabe Street, Block G, Nairobi, and the business named in it (\u201cyou\u201d).",
       "It covers the service and package named here. If we agree on extra work later, we'll put that in writing separately.",
     ],
   },

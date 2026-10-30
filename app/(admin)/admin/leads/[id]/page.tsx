@@ -6,8 +6,10 @@ import { shortDate } from "@/lib/portal";
 import { setLeadStatus, saveLeadNotes, convertLeadToClient } from "@/app/actions/admin";
 import { StageSelect } from "@/components/admin/stage-select";
 import { ActionForm } from "@/components/admin/action-form";
-import { whatsappLink } from "@/lib/site";
+import { whatsappLink, site } from "@/lib/site";
 import { toE164Kenya } from "@/lib/whatsapp";
+import { ProposalBuilder } from "@/components/admin/proposal-builder";
+import { demoTypeFor } from "@/lib/proposal-packages";
 
 export const metadata: Metadata = { title: "Lead", robots: { index: false, follow: false } };
 
@@ -17,6 +19,16 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
   if (!lead) notFound();
 
   const wa = lead.whatsapp_phone ?? (lead.phone ? toE164Kenya(lead.phone) : null);
+
+  // Prefill the proposal from what the lead already told us, so the common
+  // case is: open the lead, tick two boxes, download.
+  const proposalClient = lead.business_name ?? lead.name;
+  const demoType = demoTypeFor(lead.business_type);
+  const demoUrl = demoType
+    ? `${site.url.replace(/^https?:\/\//, "")}/demos/shop?for=${encodeURIComponent(
+        proposalClient,
+      ).replace(/%20/g, "+")}&type=${demoType}`
+    : "";
 
   return (
     <>
@@ -116,6 +128,14 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
             className="w-full rounded-card border border-line bg-cream px-4 py-3 leading-relaxed text-ink outline-none transition-colors focus:border-accent"
           />
         </ActionForm>
+      </section>
+
+      <section className="mt-12">
+        <ProposalBuilder
+          defaultClient={proposalClient}
+          defaultContact={lead.business_name ? lead.name : ""}
+          defaultDemoUrl={demoUrl}
+        />
       </section>
 
       <section className="mt-12 rounded-card border border-line bg-cream-deep p-6">

@@ -17,6 +17,10 @@ import { PROJECT_STAGES, kes, shortDate, INVOICE_LABEL } from "@/lib/portal";
 import { setProjectStatus, createProject, createInvoice } from "@/app/actions/admin";
 import { StageSelect } from "@/components/admin/stage-select";
 import { ActionForm } from "@/components/admin/action-form";
+import { getClientSignatureRequests, requestTitle } from "@/lib/signatures";
+import { AgreementChoice } from "@/components/admin/agreement-choice";
+import { requestSignature, cancelSignatureRequest } from "@/app/actions/signatures";
+import { services } from "@/lib/services";
 
 export const metadata: Metadata = { title: "Client", robots: { index: false, follow: false } };
 
@@ -28,12 +32,22 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
   const client = await getClient(id);
   if (!client) notFound();
 
-  const [projects, invoices, activity, portalUsers] = await Promise.all([
+  const [projects, invoices, activity, portalUsers, signatureRequests] = await Promise.all([
     getClientProjects(id),
     getClientInvoices(id),
     getClientActivity(id),
     getClientPortalUsers(id),
+    getClientSignatureRequests(id),
   ]);
+
+  // Shared by the invite form and the "ask to sign" form.
+  const agreementFields = (
+    <AgreementChoice
+      services={services.map((s) => s.title)}
+      projects={projects.map((p) => ({ id: p.id, name: p.name }))}
+    />
+  );
+
 
   const outstanding = invoices
     .filter((i) => i.status === "sent" || i.status === "partly_paid")
@@ -164,6 +178,86 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
               />
               <input name="fullName" placeholder="Their name (optional)" className={field} />
             </div>
+            <label className="mt-4 flex cursor-pointer items-start gap-3">
+              <input
+                type="checkbox"
+                name="requestSignature"
+                defaultChecked
+                className="mt-0.5 h-4 w-4 shrink-0 accent-[var(--color-accent)]"
+              />
+              <span className="text-sm leading-relaxed text-ink">
+                Ask them to sign the service agreement in the portal
+                <span className="block text-xs text-muted">
+                  They see the agreement and sign it with a finger or mouse. The signed PDF
+                  lands in their documents and here.
+                </span>
+              </span>
+            </label>
+            {agreementFields}
+          </ActionForm>
+        </div>
+      </section>
+
+      {/* ------------------------------------------------- agreement */}
+      <section className="mt-12">
+        <h2 className="font-mono text-xs font-semibold uppercase tracking-wider text-muted">
+          Service agreement
+        </h2>
+
+        {signatureRequests.length > 0 ? (
+          <ul className="mt-4 flex flex-col gap-px overflow-hidden rounded-card border border-line bg-line">
+            {signatureRequests.map((r) => (
+              <li key={r.id} className="flex flex-wrap items-center justify-between gap-x-5 gap-y-2 bg-cream px-5 py-4">
+                <div className="min-w-0">
+                  <p className="font-medium text-ink">
+                    {requestTitle(r)}
+                    <span className="font-normal text-muted">
+                      {" · "}
+                      {r.status === "signed" ? "Signed" : r.status === "pending" ? "Waiting for signature" : "Cancelled"}
+                    </span>
+                  </p>
+                  <p className="mt-0.5 font-mono text-xs text-muted">
+                    {r.kind === "custom" ? "custom" : "standard"}
+                    {r.project_id ? ` · ${projects.find((p) => p.id === r.project_id)?.name ?? "project"}` : ""}
+                    {" · "}asked {shortDate(r.requested_at)}
+                    {r.signed_at ? ` · signed ${shortDate(r.signed_at)}` : ""}
+                    {r.full_name ? ` · ${r.full_name}` : ""}
+                  </p>
+                </div>
+                {r.status === "signed" && r.document_id && (
+                  <a
+                    href={`/portal/documents/${r.document_id}`}
+                    className="rounded-full border border-line px-3 py-1 font-mono text-[11px] font-medium text-accent transition-colors hover:border-accent"
+                  >
+                    Signed PDF
+                  </a>
+                )}
+                {r.status === "pending" && (
+                  <ActionForm action={cancelSignatureRequest} submitLabel="Cancel" compact>
+                    <input type="hidden" name="requestId" value={r.id} />
+                    <input type="hidden" name="clientId" value={client.id} />
+                  </ActionForm>
+                )}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="mt-4 rounded-card border border-dashed border-line px-5 py-4 text-sm leading-relaxed text-muted">
+            Not asked to sign yet.
+          </p>
+        )}
+
+        <div className="mt-5 rounded-card border border-line bg-cream-deep p-6">
+          <h3 className="font-bold text-ink">Ask them to sign</h3>
+          <p className="mt-1 text-sm leading-relaxed text-muted">
+            For someone who already has portal access. Next time they open the portal
+            they&rsquo;ll see &ldquo;Sign your service agreement&rdquo;.
+          </p>
+          <ActionForm action={requestSignature} submitLabel="Ask to sign" className="mt-5">
+            <input type="hidden" name="clientId" value={client.id} />
+            <input type="hidden" name="email" value={client.email ?? ""} />
+            <input name="fullName" placeholder="Who signs (optional)" className={field} />
+            {agreementFields}
           </ActionForm>
         </div>
       </section>
