@@ -19,6 +19,7 @@ import { StageSelect } from "@/components/admin/stage-select";
 import { ActionForm } from "@/components/admin/action-form";
 import { getClientSignatureRequests, requestTitle } from "@/lib/signatures";
 import { AgreementChoice } from "@/components/admin/agreement-choice";
+import { WhatsAppInviteForm } from "@/components/admin/whatsapp-invite-form";
 import { requestSignature, cancelSignatureRequest } from "@/app/actions/signatures";
 import { services } from "@/lib/services";
 
@@ -159,8 +160,25 @@ export default async function ClientPage({ params }: { params: Promise<{ id: str
           </p>
         )}
 
+        <div className="mt-5 rounded-card border-2 border-accent/40 bg-cream-deep p-6">
+          <h3 className="font-bold text-ink">Invite by WhatsApp</h3>
+          <p className="mt-1 text-sm leading-relaxed text-muted">
+            No email needed. You send them a link on WhatsApp, they choose a password and
+            they&rsquo;re in. After that they sign in with their phone number and password.
+            Forgot their password? Just send a new invite.
+          </p>
+          <div className="mt-5">
+            <WhatsAppInviteForm
+              clientId={client.id}
+              defaultPhone={client.phone ?? ""}
+              services={services.map((s) => s.title)}
+              projects={projects.map((p) => ({ id: p.id, name: p.name }))}
+            />
+          </div>
+        </div>
+
         <div className="mt-5 rounded-card border border-line bg-cream-deep p-6">
-          <h3 className="font-bold text-ink">Invite someone to the portal</h3>
+          <h3 className="font-bold text-ink">Or invite by email</h3>
           <p className="mt-1 text-sm leading-relaxed text-muted">
             Sends them an email with a sign-in link. They land straight in their
             projects, documents and invoices — and can only ever see this client&rsquo;s.
