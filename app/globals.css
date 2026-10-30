@@ -56,3 +56,24 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ---------------- Bizi, the portal guide ---------------- */
+@keyframes bizi-wave {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-14deg); }
+  75% { transform: rotate(10deg); }
+}
+@keyframes bizi-blink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  95% { transform: scaleY(0.1); }
+}
+@keyframes bizi-pop {
+  from { opacity: 0; transform: translateY(8px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+.bizi-wave { animation: bizi-wave 1.4s ease-in-out infinite; }
+.bizi-blink { animation: bizi-blink 4s infinite; }
+.bizi-pop { animation: bizi-pop 0.22s ease-out both; }
+@media (prefers-reduced-motion: reduce) {
+  .bizi-wave, .bizi-blink, .bizi-pop { animation: none; }
+}

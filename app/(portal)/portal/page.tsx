@@ -40,9 +40,10 @@ export default async function PortalHome() {
         Where everything we are building for you currently stands.
       </p>
 
-      {toSign.map((r) => (
+      {toSign.map((r, i) => (
         <Link
           key={r.id}
+          data-guide={i === 0 ? "sign-banner" : undefined}
           href={`/portal/agreement?id=${r.id}`}
           className="mt-8 flex flex-wrap items-center justify-between gap-3 rounded-card border-2 border-accent bg-accent-tint px-6 py-5 transition-colors hover:bg-accent-tint/70"
         >
@@ -74,7 +75,7 @@ export default async function PortalHome() {
         </Link>
       )}
 
-      <section className="mt-10">
+      <section className="mt-10" data-guide="projects">
         <h2 className="font-mono text-xs font-semibold uppercase tracking-wider text-muted">
           Projects
         </h2>
