@@ -26,6 +26,13 @@ export function guideEvent(name: string) {
   window.dispatchEvent(new CustomEvent("guide:event", { detail: name }));
 }
 
+/** The first element for a target that is actually on screen (not display:none). */
+function findTarget(target: string): HTMLElement | null {
+  const all = document.querySelectorAll<HTMLElement>(`[data-guide="${target}"]`);
+  for (const el of all) if (el.getClientRects().length) return el;
+  return null;
+}
+
 function readLocalSeen(): string[] {
   try {
     return JSON.parse(localStorage.getItem(LS_KEY) ?? "[]");
@@ -144,9 +151,9 @@ export function PortalGuide({
     const look = () => {
       if (cancelled) return;
       if (!step.target) return show(null);
-      const el = document.querySelector<HTMLElement>(`[data-guide="${step.target}"]`);
-      if (el && el.getClientRects().length) {
-        el.scrollIntoView({ block: "center", behavior: "smooth" });
+      const el = findTarget(step.target);
+      if (el) {
+        el.scrollIntoView({ block: "center", inline: "center", behavior: "smooth" });
         timer = setTimeout(() => show(el.getBoundingClientRect()), 350);
         return;
       }
@@ -173,7 +180,7 @@ export function PortalGuide({
   useEffect(() => {
     if (!step?.target || !ready) return;
     const update = () => {
-      const el = document.querySelector<HTMLElement>(`[data-guide="${step.target}"]`);
+      const el = findTarget(step.target!);
       if (el) setRect(el.getBoundingClientRect());
       setVw(window.innerWidth);
     };
@@ -216,13 +223,19 @@ export function PortalGuide({
   const last = index === steps.length - 1;
   const mobile = vw < 640;
 
-  // Where the card goes.
+  // Where the card goes. Phones: full width, pinned top or bottom, away from
+  // the highlighted thing. Bigger screens: next to it, or centred.
   let cardStyle: React.CSSProperties;
-  if (!rect) {
-    cardStyle = { left: "50%", top: "50%", transform: "translate(-50%, -50%)" };
-  } else if (mobile) {
-    const targetLow = rect.top + rect.height / 2 > window.innerHeight / 2;
-    cardStyle = targetLow ? { left: 12, right: 12, top: 12 } : { left: 12, right: 12, bottom: 12 };
+  if (mobile) {
+    const targetLow = rect ? rect.top + rect.height / 2 > window.innerHeight / 2 : false;
+    const edge = { left: 12, right: 12, maxHeight: "60vh", overflowY: "auto" as const };
+    cardStyle = !rect
+      ? { ...edge, bottom: "max(12px, env(safe-area-inset-bottom))" }
+      : targetLow
+        ? { ...edge, top: "max(12px, env(safe-area-inset-top))" }
+        : { ...edge, bottom: "max(12px, env(safe-area-inset-bottom))" };
+  } else if (!rect) {
+    cardStyle = { left: "50%", top: "50%", transform: "translate(-50%, -50%)", width: 400 };
   } else {
     const width = 380;
     const below = rect.bottom + 16 + 220 < window.innerHeight;
@@ -233,10 +246,10 @@ export function PortalGuide({
   }
 
   return (
-    <div className="fixed inset-0 z-[100]" aria-live="polite">
+    <div className="pointer-events-none fixed inset-0 z-[100]" aria-live="polite">
       {/* Dim + click-catcher. On "do it yourself" steps the page stays clickable. */}
       {!rect && <div className="absolute inset-0 bg-[#0a1423]/55" />}
-      {!interactive && <div className="absolute inset-0" onClick={(e) => e.stopPropagation()} />}
+      {!interactive && <div className="pointer-events-auto absolute inset-0" onClick={(e) => e.stopPropagation()} />}
 
       {rect && (
         <div
@@ -256,14 +269,14 @@ export function PortalGuide({
         aria-label={title}
         key={`${tour}-${index}`}
         className="bizi-pop absolute flex gap-3 rounded-3xl border border-line bg-surface p-4 shadow-2xl sm:p-5"
-        style={{ ...cardStyle, maxWidth: mobile ? undefined : 400, pointerEvents: "auto" }}
+        style={{ ...cardStyle, pointerEvents: "auto" }}
       >
         <Bizi mood={step.mood} size={mobile ? 56 : 68} />
         <div className="min-w-0 flex-1">
           <p className="font-extrabold leading-snug text-ink">{title}</p>
           <p className="mt-1.5 text-sm leading-relaxed text-muted">{text}</p>
 
-          <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
             <div className="flex gap-1" aria-label={`Step ${index + 1} of ${steps.length}`}>
               {steps.length > 1 &&
                 steps.map((_, i) => (
@@ -322,33 +335,27 @@ export function PortalGuide({
   );
 }
 
-/** The two buttons at the top of the portal. */
-export function GuideLauncher() {
+/** The two buttons at the top of the portal ("Show me around" and "Practice"). */
+export function GuideLauncher({ className = "" }: { className?: string }) {
   const pathname = usePathname();
   const inPractice = pathname === "/portal/practice";
+  const pill =
+    "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-semibold transition-colors sm:text-sm";
   return (
-    <div data-guide="guide-launcher" className="flex items-center gap-2">
+    <div data-guide="guide-launcher" className={`flex items-center gap-2 ${className}`}>
       <button
         type="button"
         onClick={() => startGuide(inPractice ? "practice" : "welcome")}
-        className="inline-flex items-center gap-1.5 rounded-full border border-accent/40 bg-accent-tint px-3 py-1.5 text-xs font-semibold text-accent transition-colors hover:border-accent sm:text-sm"
+        className={`${pill} border border-accent/40 bg-accent-tint text-accent hover:border-accent`}
       >
-        <span aria-hidden="true">🧭</span>
-        <span className="sm:hidden">Tour</span>
-        <span className="hidden sm:inline">Show me around</span>
+        <span aria-hidden="true">🧭</span> Show me around
       </button>
       {inPractice ? (
-        <Link
-          href="/portal"
-          className="inline-flex items-center gap-1.5 rounded-full bg-ink px-3 py-1.5 text-xs font-semibold text-white sm:text-sm"
-        >
-          Exit practice
+        <Link href="/portal" className={`${pill} bg-ink text-white`}>
+          ✕ Exit practice
         </Link>
       ) : (
-        <Link
-          href="/portal/practice"
-          className="inline-flex items-center gap-1.5 rounded-full bg-accent px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-accent-hover sm:text-sm"
-        >
+        <Link href="/portal/practice" className={`${pill} bg-accent text-white hover:bg-accent-hover`}>
           <span aria-hidden="true">▶</span> Practice
         </Link>
       )}

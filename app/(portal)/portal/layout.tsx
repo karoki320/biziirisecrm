@@ -73,7 +73,7 @@ export default async function PortalLayout({
             <span className="font-extrabold tracking-tight text-ink">{site.name}</span>
           </Link>
           <div className="flex items-center gap-3 sm:gap-5">
-            <GuideLauncher />
+            <GuideLauncher className="hidden sm:flex" />
             <span className="hidden text-sm text-muted lg:block">
               {session.clientName ?? session.email}
             </span>
@@ -96,6 +96,14 @@ export default async function PortalLayout({
             ))}
           </ul>
         </nav>
+
+        {/* Phones: the guide buttons get their own strip so the top bar never wraps. */}
+        <div className="border-t border-line px-5 py-2.5 sm:hidden">
+          <div className="flex items-center justify-end gap-3 min-[400px]:justify-between">
+            <span className="hidden whitespace-nowrap text-xs font-medium text-muted min-[400px]:inline">New here?</span>
+            <GuideLauncher />
+          </div>
+        </div>
       </header>
 
       <main className="mx-auto w-full max-w-5xl flex-1 px-5 py-10">{children}</main>

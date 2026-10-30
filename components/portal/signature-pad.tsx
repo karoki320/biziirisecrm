@@ -20,7 +20,10 @@ export function SignaturePad({
   invalid?: boolean;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  // The signature travels in a hidden input. It must be React state: a hidden
+  // input's value IS its default value, so setting it by hand gets wiped the
+  // next time React re-renders the field.
+  const [data, setData] = useState("");
   const drawing = useRef(false);
   const last = useRef<{ x: number; y: number } | null>(null);
   const [empty, setEmpty] = useState(true);
@@ -44,7 +47,7 @@ export function SignaturePad({
     ctx.strokeStyle = "#0d1b3e";
     setEmpty(true);
     hasInk.current = false;
-    if (inputRef.current) inputRef.current.value = "";
+    setData("");
   }, [height]);
 
   useEffect(() => {
@@ -58,22 +61,7 @@ export function SignaturePad({
       }
     };
     window.addEventListener("resize", onResize);
-
-    // React resets a form after its action runs, which would blank the hidden
-    // input while the drawing is still on screen. Put the drawing back.
-    const form = inputRef.current?.form;
-    const onReset = () =>
-      setTimeout(() => {
-        if (inputRef.current && canvasRef.current && hasInk.current) {
-          inputRef.current.value = exportPng(canvasRef.current);
-        }
-      }, 0);
-    form?.addEventListener("reset", onReset);
-
-    return () => {
-      window.removeEventListener("resize", onResize);
-      form?.removeEventListener("reset", onReset);
-    };
+    return () => window.removeEventListener("resize", onResize);
   }, [fit]);
 
   const point = (e: React.PointerEvent<HTMLCanvasElement>) => {
@@ -115,7 +103,7 @@ export function SignaturePad({
     last.current = null;
     setEmpty(false);
     hasInk.current = true;
-    if (inputRef.current) inputRef.current.value = exportPng(canvasRef.current!);
+    setData(exportPng(canvasRef.current!));
   };
 
   return (
@@ -146,7 +134,7 @@ export function SignaturePad({
           </span>
         )}
       </div>
-      <input ref={inputRef} type="hidden" name={name} defaultValue="" />
+      <input type="hidden" name={name} value={data} readOnly />
       <div className="mt-2 flex justify-end">
         <button
           type="button"

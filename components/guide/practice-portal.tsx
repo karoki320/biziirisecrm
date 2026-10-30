@@ -53,7 +53,7 @@ export function PracticePortal({ timeline }: { timeline: React.ReactNode }) {
 
   return (
     <>
-      <div className="rounded-card border-2 border-dashed border-accent/50 bg-accent-tint px-5 py-3 text-sm text-ink">
+      <div className="rounded-card border-2 border-dashed border-accent/50 bg-accent-tint px-4 py-3 text-sm leading-relaxed text-ink">
         <span className="font-bold">Practice mode.</span> Sample data only — nothing you do here is
         sent, saved or real.
       </div>
@@ -61,7 +61,7 @@ export function PracticePortal({ timeline }: { timeline: React.ReactNode }) {
       <h1 className="mt-6 text-2xl font-extrabold tracking-tight text-ink sm:text-3xl">Hello, Practice</h1>
       <p className="mt-2 leading-relaxed text-muted">This is how your portal will look once work begins.</p>
 
-      <div role="tablist" className="mt-6 flex gap-2 overflow-x-auto pb-1">
+      <div role="tablist" className="mt-6 grid grid-cols-4 gap-1.5 sm:flex sm:gap-2">
         {TABS.map((t) => (
           <button
             key={t.key}
@@ -69,7 +69,7 @@ export function PracticePortal({ timeline }: { timeline: React.ReactNode }) {
             aria-selected={tab === t.key}
             data-guide={`practice-tab-${t.key}`}
             onClick={() => pick(t.key)}
-            className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
+            className={`whitespace-nowrap rounded-full px-1.5 py-2.5 text-xs font-semibold min-[380px]:text-[13px] transition-colors sm:px-4 sm:text-sm ${
               tab === t.key ? "bg-accent text-white" : "border border-line bg-cream text-ink hover:border-accent"
             }`}
           >
@@ -80,7 +80,7 @@ export function PracticePortal({ timeline }: { timeline: React.ReactNode }) {
 
       <div className="mt-6">
         {tab === "overview" && (
-          <div data-guide="practice-project" className="rounded-card border border-line bg-cream p-7">
+          <div data-guide="practice-project" className="rounded-card border border-line bg-cream p-5 sm:p-7">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <h2 className="text-lg font-bold text-ink">Sample online shop</h2>
               <span className="font-mono text-xs text-muted">In progress</span>
@@ -97,7 +97,7 @@ export function PracticePortal({ timeline }: { timeline: React.ReactNode }) {
               ["Homepage design.png", "840 KB"],
               ["Your logo.svg", "12 KB"],
             ].map(([n, size]) => (
-              <li key={n} className="flex items-center justify-between gap-4 bg-cream px-6 py-4">
+              <li key={n} className="flex items-center justify-between gap-4 bg-cream px-4 py-4 sm:px-6">
                 <div className="min-w-0">
                   <p className="truncate font-medium text-ink">{n}</p>
                   <p className="mt-0.5 font-mono text-xs text-muted">sample · {size}</p>
@@ -109,7 +109,7 @@ export function PracticePortal({ timeline }: { timeline: React.ReactNode }) {
         )}
 
         {tab === "invoices" && (
-          <div data-guide="practice-invoice" className="rounded-card border border-line bg-cream px-6 py-5">
+          <div data-guide="practice-invoice" className="rounded-card border border-line bg-cream px-5 py-5 sm:px-6">
             <div className="flex flex-wrap items-baseline justify-between gap-3">
               <div>
                 <div className="flex items-center gap-3">
